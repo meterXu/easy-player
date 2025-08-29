@@ -38,7 +38,7 @@ yarn add easy-player
 ```javascript
 import easypPlayer from "easy-player";
 // 初始化
-const palyer = new easypPlayer("#palyer-box",{
+const palyer = new easyPlayer("#palyer-box",{
     isMute:true,
     hasAuto:false
 })
