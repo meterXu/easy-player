@@ -87,10 +87,10 @@ export default defineConfig({
 | defaultQuality  |  默认显示的清晰度，如果不设置，会显示第一个清晰度                                    | String | -   |
 | ptzConfig         | PTZ配置      | Object | {ptz: true, ptzMore: true}   |
 | debug | 控制台日志打印 | Boolean | false |
-注: 
+注:
 
     1.解码模式 MSE > WCS > wasm(simd适合高分辨率)
- 
+
 ## 事件回调
 
 | 事件名      | 说明         |
