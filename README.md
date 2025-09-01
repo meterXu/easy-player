@@ -38,7 +38,7 @@ yarn add easy-player
 ```javascript
 import easypPlayer from "easy-player";
 // 初始化
-const palyer = new easypPlayer("#palyer-box",{
+const palyer = new easyPlayer("#palyer-box",{
     isMute:true,
     hasAuto:false
 })
@@ -51,7 +51,6 @@ palyer.on('play', function () {
 ```javascript
 import easyPlayer from 'vite-plugin-easy-player'
 export default defineConfig({
-    ...
     plugins:[
         easyPlayer()
     ]
@@ -61,36 +60,36 @@ export default defineConfig({
 ## 配置属性 config
 
 
-| 参数               | 说明                                             | 类型                       | 默认值 |
-| ------------------ | ------------------------------------------------ | -------------------------- | ------ |
-| isLive | 是否直播 | Boolean | true |
-| hasAudio | 是否解析音频 | Boolean | true |
-| isMute | 是否渲染音频 | Boolean | false |
-| stretch | 视频拉伸 | Boolean | true |
-| poster             | 视频封面图片                                     | String                     | -      |
-| bufferTime                | 加载显设置最小缓冲时长，单位秒，播放器会自动消除延迟。       | Number                     | 1 |
-| loadTimeOut                | 视频加载超时,单位秒。    | Number                     | 10 |
-| loadTimeReplay                | 重连次数 -1为一直加载。    | Number                     | 3 |
-| MSE | MSE模式 | Boolean | fasle |
-| WCS | WCS模式 | Boolean | fasle |
-| WASM | WASM模式 | Boolean | fasle |
-| WASMSIMD |WASMSIMD模式                                     | Boolean                    | false   |
-| gpuDecoder |硬解码                                    | Boolean                    | false   |
-| webGPU |渲染方式                                       | Boolean                    | false   |
-| canvasRender |渲染容器                                   | Boolean                    | false   |
-| isRtcSRS |SRS类型                                   | Boolean                    | false   |
-| isRtcZLM |ZLM类型                                   | Boolean                    | false   |
-| isFlow | 裸流 | Boolean | false |
-| watermark         | 水印      | Object |  {text: {content:'test',color:'',opacity:,fontSize:''},right: 0,top: 0}   |
-| fullWatermark         | 全屏水印      | Object | {text: 'test',angle:'',color:'',fontSize: '',opacity:''}   |
-| quality         | 配置清晰      | Array | ['普清', '高清', '超清', '4K', '8K']   |
-| defaultQuality  |  默认显示的清晰度，如果不设置，会显示第一个清晰度                                    | String | -   |
-| ptzConfig         | PTZ配置      | Object | {ptz: true, ptzMore: true}   |
-| debug | 控制台日志打印 | Boolean | false |
-注: 
+| 参数               | 说明                                             | 类型                       | 默认值                                                                    |
+| ------------------ | ------------------------------------------------ | -------------------------- |------------------------------------------------------------------------|
+| isLive | 是否直播 | Boolean | true                                                                   |
+| hasAudio | 是否解析音频 | Boolean | true                                                                   |
+| isMute | 是否渲染音频 | Boolean | false                                                                  |
+| stretch | 视频拉伸 | Boolean | false                                                                  |
+| poster             | 视频封面图片                                     | String                     | -                                                                      |
+| bufferTime                | 加载显设置最小缓冲时长，单位秒，播放器会自动消除延迟。       | Number                     | 1                                                                      |
+| loadTimeOut                | 视频加载超时,单位秒。    | Number                     | 10                                                                     |
+| loadTimeReplay                | 重连次数 -1为一直加载。    | Number                     | 3                                                                      |
+| MSE | MSE模式 | Boolean | fasle                                                                  |
+| WCS | WCS模式 | Boolean | fasle                                                                  |
+| WASM | WASM模式 | Boolean | fasle                                                                  |
+| WASMSIMD |WASMSIMD模式                                     | Boolean                    | false                                                                  |
+| gpuDecoder |硬解码                                    | Boolean                    | false                                                                  |
+| webGPU |渲染方式                                       | Boolean                    | false                                                                  |
+| canvasRender |渲染容器                                   | Boolean                    | false                                                                  |
+| isRtcSRS |SRS类型                                   | Boolean                    | false                                                                  |
+| isRtcZLM |ZLM类型                                   | Boolean                    | false                                                                  |
+| isFlow | 裸流 | Boolean | false                                                                  |
+| watermark         | 水印      | Object | {text: {content:'',color:'',opacity:,fontSize:''},right: 0,top: 0} |
+| fullWatermark         | 全屏水印      | Object | {text: '',angle:'',color:'',fontSize: '',opacity:''}               |
+| quality         | 配置清晰      | Array | ['普清', '高清', '超清', '4K', '8K']                                         |
+| defaultQuality  |  默认显示的清晰度，如果不设置，会显示第一个清晰度                                    | String | -                                                                      |
+| ptzConfig         | PTZ配置      | Object | {ptz: true, ptzMore: true}                                             |
+| debug | 控制台日志打印 | Boolean | false                                                                  |
+注:
 
     1.解码模式 MSE > WCS > wasm(simd适合高分辨率)
- 
+
 ## 事件回调
 
 | 事件名      | 说明         |

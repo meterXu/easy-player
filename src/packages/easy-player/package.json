@@ -33,6 +33,13 @@
     "@types/lodash-es": "^4.17.12",
     "typescript": "~5.8.3"
   },
-  "author": "isaac",
-  "license": "MIT"
+  "author": "isaac <xhgainxq@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/meterXu/easy-player"
+  },
+  "bugs": {
+    "url": "https://github.com/meterXu/easy-player/issues"
+  }
 }
