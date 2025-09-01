@@ -10,11 +10,11 @@ export const defaultConfig = {
     /**
      * 是否渲染音频
      */
-    isMute:true,
+    isMute:false,
     /**
      * 视频拉伸
      */
-    stretch:true,
+    stretch:false,
     /**
      * 视频封面图片
      */
@@ -76,7 +76,7 @@ export const defaultConfig = {
      */
     watermark:{
         text:{
-            content:'test',
+            content:'',
             angle:'',
             color:'',
             fontSize:'',
@@ -89,7 +89,7 @@ export const defaultConfig = {
      * 全屏水印
      */
     fullWatermark:{
-        text:'test',
+        text:'',
         angle:'',
         color:'',
         fontSize:'',
