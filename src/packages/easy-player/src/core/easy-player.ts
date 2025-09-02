@@ -1,4 +1,4 @@
-import {EasyPlayerConfig, defaultConfig} from "./config";
+import {type EasyPlayerConfig, defaultConfig} from "./config";
 import {merge} from 'lodash-es'
 
 export type VideoInfo = {

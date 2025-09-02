@@ -1,7 +1,7 @@
 import fs from 'fs-extra';
 import path from 'path';
 import serveStatic from 'serve-static';
-import { HtmlTagDescriptor, normalizePath, Plugin, UserConfig } from 'vite';
+import { type HtmlTagDescriptor, normalizePath, type Plugin, type UserConfig } from 'vite';
 
 interface VitePluginEasyPlayerOptions {
     easyPlayerBuildRootPath?: string;
@@ -37,7 +37,7 @@ export default function vitePluginEasyPlayer(options: VitePluginEasyPlayerOption
             // -----------dev-----------
             userConfig.define = {
                 EASY_PLAYER_PATH: EASY_PLAYER_PATH,
-                EASY_PLAYER_URL:JSON.stringify(EASY_PLAYER_URL)
+                EASY_PLAYER_URL:EASY_PLAYER_URL
             };
             return userConfig;
         },
