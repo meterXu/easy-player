@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {ref, onMounted,onUnmounted} from 'vue'
-import easyPlayer from "@/packages/easy-player/src/index.ts";
+import EasyPlayer from "@/packages/easy-player/src/index.ts";
 
 const playerRef = ref()
 const isMute = ref(true)
@@ -10,77 +10,77 @@ const url = ref('https://sf1-cdn-tos.huoshanstatic.com/obj/media-fe/xgplayer_doc
 const videoInfo = ref()
 const audioInfo = ref()
 
-let player = null as any
+let easyPlayer = null as any
 onMounted(() => {
-  player = new easyPlayer(playerRef.value)
+  easyPlayer = new EasyPlayer(playerRef.value)
 })
 
 onUnmounted(()=>{
-  player&&player.destroy()
+  easyPlayer&&easyPlayer.destroy()
 })
 
 function onPlay() {
-  if(player.isDestroy){
-    player =  new easyPlayer(playerRef.value)
+  if(easyPlayer.isDestroy){
+    easyPlayer =  new EasyPlayer(playerRef.value)
   }
-  url.value&&player.play(url.value).then(()=>{
-    isPause.value = player.isPause()
-    isMute.value = player.isMute()
+  url.value&&easyPlayer.play(url.value).then(()=>{
+    isPause.value = easyPlayer.isPause()
+    isMute.value = easyPlayer.isMute()
   })
 }
 function onPause(){
-  player.pause()
-  isPause.value = player.isPause()
-  isMute.value = player.isMute()
+  easyPlayer.pause()
+  isPause.value = easyPlayer.isPause()
+  isMute.value = easyPlayer.isMute()
 }
 
 function onMute() {
-  player.setMute(!isMute.value)
-  isPause.value = player.isPause()
-  isMute.value = player.isMute()
+  easyPlayer.setMute(!isMute.value)
+  isPause.value = easyPlayer.isPause()
+  isMute.value = easyPlayer.isMute()
 }
 
 function onScreenshot(){
-  let res = player.screenshot('test','jpg',0.5,'blob')
+  let res = easyPlayer.screenshot('test','jpg',0.5,'blob')
   res&&downloadFileByBlob('test',res)
 }
 
 function onSetFullscreen(){
   isFullscreen.value = !isFullscreen.value
-  player.setFullscreen(isFullscreen.value)
+  easyPlayer.setFullscreen(isFullscreen.value)
 }
 
 function onexitFullscreen(){
-  player.exitFullscreen()
+  easyPlayer.exitFullscreen()
   isFullscreen.value = false
 }
 
 function onSetQuality(event:any){
-  player.setQuality(event.target.value)
+  easyPlayer.setQuality(event.target.value)
 }
 
 function onSetRate(event:any){
-  player.setRate(event.target.value)
+  easyPlayer.setRate(event.target.value)
 }
 
 function onSeekTime(event:any){
-  player.seekTime(event.target.value)
+  easyPlayer.seekTime(event.target.value)
 }
 
 function onGetVideoInfo(){
-  videoInfo.value = player.getVideoInfo()
+  videoInfo.value = easyPlayer.getVideoInfo()
 }
 
 function onGetAudioInfo(){
-  audioInfo.value = player.getAudioInfo()
+  audioInfo.value = easyPlayer.getAudioInfo()
 }
 
 function onSetMic(){
-  player.setMic(true)
+  easyPlayer.setMic(true)
 }
 
 function onDestroy(){
-  player.destroy()
+  easyPlayer.destroy()
 }
 
 function downloadFileByUrl(name:string, url:string) {

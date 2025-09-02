@@ -5,27 +5,6 @@
 
 EasyPlayer.js H5播放器，是一款能够同时支持HTTP、HTTP-FLV、HLS（m3u8）、WS、WEBRTC、FMP4视频直播与视频点播等多种协议，支持H.264、H.265、AAC、G711A、Mp3等多种音视频编码格式，支持MSE、WASM、WebCodec等多种解码方式，支持Windows、Linux、Android、iOS全平台终端的H5播放器，使用简单, 功能强大。
 
-## 功能说明
-- [x] 支持 MSE H264和H265硬解码;
-- [x] 支持 WebCodec H264和H265硬解码;
-- [x] 支持 WASM H264和H265硬解码/软解码;
-- [x] 支持 m3u8/HLS (H265/H265)播放;
-- [x] 支持 Mpeg4格式(H264)播放;
-- [x] 支持 HTTP-FLV/WS-FLV (H265/H265)播放;
-- [x] 支持 HTTP-FMP4/WS-FMP4 (H265/H265)播放;
-- [x] 支持 WEBRTC(easy支持H264/H265、其他流媒体支持H264)播放;
-- [x] 支持 裸流(H264/H265) 播放;
-- [x] 支持 直播和点播播放;
-- [x] 支持 点播多清晰度播放;
-- [x] 支持 全屏或比例显示;
-- [x] 支持 电子放大;
-- [x] 支持 水印(动态水印、幽灵水印);
-- [x] 支持 显示上一个视频最后一帧;
-- [x] 支持 播放器快照截图;
-- [x] 支持 视频录制(WebM格式(音频+视频)、Mp4格式(视频),Flv格式(音频+视频));
-- [x] 支持 超时、断网重连、异常暂停播放等;
-- [x] 支持 解析视频i帧文件转base64;
-
 ## 快速开始
 
 **安装**
@@ -36,14 +15,14 @@ yarn add easy-player
 ```
 **使用**
 ```javascript
-import easypPlayer from "easy-player";
+import EasyPlayer from "easy-player";
 // 初始化
-const palyer = new easyPlayer("#palyer-box",{
+const easyPalyer = new EasyPlayer("#palyer-box",{
     isMute:true,
     hasAuto:false
 })
 // 事件监听
-palyer.on('play', function () {
+easyPalyer.on('play', function () {
     console.log('play');
 })
 ```
@@ -145,5 +124,5 @@ screenshot 截图，调用后弹出下载框保存截图
     type: 可选参数, 可选download或者base64或者blob，默认download
 案例:
 ```js
-const base64 = EasyPlayerPro.screenshot("test", "png", 0.5, 'base64')
+const base64 = easyPalyer.screenshot("test", "png", 0.5, 'base64')
 ```

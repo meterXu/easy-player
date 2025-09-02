@@ -1,2 +1,2 @@
-import {easyPlayer} from './core/easy-player'
-export default easyPlayer
+import {EasyPlayer} from './core/easy-player'
+export default EasyPlayer

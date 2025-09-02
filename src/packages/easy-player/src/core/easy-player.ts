@@ -16,7 +16,7 @@ export type AudioInfo = {
     depth: string,
 }
 
-export class easyPlayer {
+export class EasyPlayer {
     private player: any = null;
     private config: EasyPlayerConfig = {};
     /**
