@@ -22,7 +22,7 @@ export default function vitePluginEasyPlayer(options: VitePluginEasyPlayerOption
 
     return {
         name: 'vite-plugin-easy-player',
-
+        apply:()=>true,
         config(c, { command }) {
             isBuild = command === 'build';
             if (c.base !== undefined) {
@@ -34,11 +34,13 @@ export default function vitePluginEasyPlayer(options: VitePluginEasyPlayerOption
             }
             EASY_PLAYER_URL = path.posix.join(base, EASY_PLAYER_PATH)
             const userConfig: UserConfig = {};
-            // -----------dev-----------
-            userConfig.define = {
-                EASY_PLAYER_PATH: EASY_PLAYER_PATH,
-                EASY_PLAYER_URL:EASY_PLAYER_URL
-            };
+            if(!isBuild){
+                // -----------dev-----------
+                userConfig.define = {
+                    EASY_PLAYER_PATH: JSON.stringify(EASY_PLAYER_PATH),
+                    EASY_PLAYER_URL:JSON.stringify(EASY_PLAYER_URL)
+                };
+            }
             return userConfig;
         },
 
@@ -63,14 +65,13 @@ export default function vitePluginEasyPlayer(options: VitePluginEasyPlayerOption
 
         transformIndexHtml() {
             const tags: HtmlTagDescriptor[] = []
-            if (isBuild) {
-                tags.push({
-                    tag: 'script',
-                    attrs: {
-                        src: normalizePath(path.join(EASY_PLAYER_URL, 'EasyPlayer-pro.js')),
-                    }
-                });
-            }
+            tags.push({
+                tag: 'script',
+                attrs: {
+                    src: isBuild?normalizePath(path.join(EASY_PLAYER_URL, 'EasyPlayer-pro.js')):
+                        normalizePath(path.join(easyPlayerBuildRootPath,easyPlayerBuildDir,'EasyPlayer-pro.js')),
+                }
+            });
             return tags;
         }
     };
