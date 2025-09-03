@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import {onMounted} from "vue";
-
+import {ref,onMounted} from "vue";
+import EasyPlayerPro from "easy-player-pro";
 
 const props = defineProps({
   isLive:{
@@ -13,7 +13,7 @@ const easyPlayerRef = ref()
 
 let player = null
 onMounted(()=>{
-  easyPlayer = new VueEasyPlayer(easyPlayerRef.value)
+  player = new EasyPlayerPro(easyPlayerRef.value)
 })
 </script>
 

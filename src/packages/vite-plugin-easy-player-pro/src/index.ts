@@ -3,25 +3,25 @@ import path from 'path';
 import serveStatic from 'serve-static';
 import { type HtmlTagDescriptor, normalizePath, type Plugin, type UserConfig } from 'vite';
 
-interface VitePluginEasyPlayerOptions {
+interface VitePluginEasyPlayerProOptions {
     easyPlayerBuildRootPath?: string;
     easyPlayerBuildDir?:string
 }
 
-export default function vitePluginEasyPlayer(options: VitePluginEasyPlayerOptions = {}): Plugin {
+export default function vitePluginEasyPlayerPro(options: VitePluginEasyPlayerProOptions = {}): Plugin {
     const {
-        easyPlayerBuildRootPath = 'node_modules/easy-player/lib',
+        easyPlayerBuildRootPath = 'node_modules/easy-player-pro/lib',
         easyPlayerBuildDir = 'build'
     } = options;
 
-    let EASY_PLAYER_PATH = 'assets/easy-player/';
+    let EASY_PLAYER_PATH = 'assets/easy-player-pro/';
     let EASY_PLAYER_URL = EASY_PLAYER_PATH
     let outDir = 'dist';
     let base: string = '/';
     let isBuild: boolean = false;
 
     return {
-        name: 'vite-plugin-easy-player',
+        name: 'vite-plugin-easy-player-pro',
         apply:()=>true,
         config(c, { command }) {
             isBuild = command === 'build';

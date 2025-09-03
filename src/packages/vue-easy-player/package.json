@@ -21,6 +21,6 @@
   "devDependencies": {
   },
   "peerDependencies": {
-    "easy-player": "^0.1.1"
+    "easy-player-pro": "^0.1.2"
   }
 }

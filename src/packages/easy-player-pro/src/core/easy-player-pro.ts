@@ -1,4 +1,4 @@
-import {type EasyPlayerConfig, defaultConfig} from "./config";
+import {type EasyPlayerProConfig, defaultConfig} from "./config";
 import {merge} from 'lodash-es'
 
 export type VideoInfo = {
@@ -16,9 +16,9 @@ export type AudioInfo = {
     depth: string,
 }
 
-export class EasyPlayer {
+export class EasyPlayerPro {
     private player: any = null;
-    private config: EasyPlayerConfig = {};
+    private config: EasyPlayerProConfig = {};
     /**
      * 是否销毁
      */
@@ -129,7 +129,7 @@ export class EasyPlayer {
     public onError = (err:any) => {
     }
 
-    constructor(container: HTMLElement, config?: EasyPlayerConfig) {
+    constructor(container: HTMLElement, config?: EasyPlayerProConfig) {
         this.config = merge({}, defaultConfig, config)
         this.player = new window.EasyPlayerPro(container, this.config);
         this.isDestroy = false;

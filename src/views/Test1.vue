@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {ref, onMounted,onUnmounted} from 'vue'
-import EasyPlayer,{type VideoInfo,type AudioInfo} from "@/packages/easy-player-pro/src/index.ts";
+import EasyPlayerPro,{type VideoInfo,type AudioInfo} from "easy-player-pro";
 
 const playerRef = ref()
 const isMute = ref(true)
@@ -12,7 +12,7 @@ const audioInfo = ref()
 
 let easyPlayer = null as any
 onMounted(() => {
-  easyPlayer = new EasyPlayer(playerRef.value)
+  easyPlayer = new EasyPlayerPro(playerRef.value)
   easyPlayer.onPlay=()=>{
     console.log('play event')
   }
@@ -84,7 +84,7 @@ onUnmounted(()=>{
 
 function onPlay() {
   if(easyPlayer.isDestroy){
-    easyPlayer =  new EasyPlayer(playerRef.value)
+    easyPlayer =  new EasyPlayerPro(playerRef.value)
   }
   url.value&&easyPlayer.play(url.value).then(()=>{
     isPause.value = easyPlayer.isPause()

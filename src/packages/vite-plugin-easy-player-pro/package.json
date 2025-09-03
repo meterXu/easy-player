@@ -1,7 +1,7 @@
 {
-  "name": "vite-plugin-easy-player",
-  "version": "0.1.1",
-  "description": "easy-player plugin for Vite",
+  "name": "vite-plugin-easy-player-pro",
+  "version": "0.1.2",
+  "description": "easy-player-pro plugin for Vite",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -23,7 +23,7 @@
   "keywords": [
     "vite",
     "vite-plugin",
-    "easy-player"
+    "easy-player-pro"
   ],
   "author": "isaac <xhgainxq@gmail.com>",
   "license": "MIT",

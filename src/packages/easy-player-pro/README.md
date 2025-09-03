@@ -15,9 +15,9 @@ yarn add easy-player-pro
 ```
 **使用**
 ```javascript
-import EasyPlayer from "easy-player-pro";
+import EasyPlayerPro from "easy-player-pro";
 // 初始化
-const easyPalyer = new EasyPlayer("#palyer-box",{
+const easyPalyer = new EasyPlayerPro("#palyer-box",{
     isMute:true,
     hasAuto:false
 })
@@ -28,10 +28,10 @@ easyPalyer.onPlay=()=>{
 ```
 **vite配置**
 ```javascript
-import easyPlayer from 'vite-plugin-easy-player'
+import easyPlayerPro from 'vite-plugin-easy-player-pro'
 export default defineConfig({
     plugins:[
-        easyPlayer()
+        easyPlayerPro()
     ]
 })
 ```

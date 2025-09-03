@@ -115,7 +115,7 @@ export const defaultConfig = {
      */
     debug:false,
 }
-export type EasyPlayerConfig = Partial<typeof defaultConfig>
+export type EasyPlayerProConfig = Partial<typeof defaultConfig>
 
 
 
