@@ -43,7 +43,7 @@ export default defineConfig({
 | ------------------ | ------------------------------------------------ | -------------------------- |------------------------------------------------------------------------|
 | isLive | 是否直播 | Boolean | true                                                                   |
 | hasAudio | 是否解析音频 | Boolean | true                                                                   |
-| isMute | 是否渲染音频 | Boolean | false                                                                  |
+| isNotMute | 是否不静音 | Boolean | false                                                                  |
 | stretch | 视频拉伸 | Boolean | false                                                                  |
 | poster             | 视频封面图片                                     | String                     | -                                                                      |
 | bufferTime                | 加载显设置最小缓冲时长，单位秒，播放器会自动消除延迟。       | Number                     | 1                                                                      |

@@ -9,7 +9,12 @@ const url = ref('https://sf1-cdn-tos.huoshanstatic.com/obj/media-fe/xgplayer_doc
 const videoInfo = ref()
 const audioInfo = ref()
 
-let easyPlayer = null as any
+let easyPlayer = ref()
+
+function onPlay(){
+  easyPlayer.value&&easyPlayer.value.player.play(url.value)
+}
+
 onMounted(() => {
 
 })
@@ -17,10 +22,10 @@ onMounted(() => {
 
 <template>
   <main class="content-wrap">
-<!--    <div class="play-control">-->
-<!--      <input v-model="url" style="width: 100%"/>-->
-<!--      <div class="play-btns">-->
-<!--        <button @click="onPlay">播放</button>-->
+    <div class="play-control">
+      <input v-model="url" style="width: 100%"/>
+      <div class="play-btns">
+        <button @click="onPlay">播放</button>
 <!--        <button @click="onPause">暂停,{{isPause}}</button>-->
 <!--        <button @click="onMute">切换静音,{{isMute}}</button>-->
 <!--        <button @click="onScreenshot">获取快照</button>-->
@@ -48,8 +53,8 @@ onMounted(() => {
 <!--        <button @click="onGetAudioInfo">获取音频信息</button>-->
 <!--        <button @click="onSetMic">设置语音对讲状态</button>-->
 <!--        <button @click="onDestroy">关闭视频</button>-->
-<!--      </div>-->
-<!--    </div>-->
+      </div>
+    </div>
     <div>
       视频信息：{{videoInfo}}
     </div>
@@ -57,9 +62,7 @@ onMounted(() => {
       音频信息：{{audioInfo}}
     </div>
 
-    <div class="player_box">
-      <VueEasyPlayerPro :url="url" :autoplay="true"></VueEasyPlayerPro>
-    </div>
+    <VueEasyPlayerPro class="player_box" ref="easyPlayer" :url="url" :autoplay="true"></VueEasyPlayerPro>
   </main>
 </template>
 

@@ -14,33 +14,51 @@ const props = defineProps({
   autoplay:{
     default:false,
     type:Boolean
+  },
+  mute:{
+    default:true,
+    type:Boolean
+  },
+  stretch:{
+    default:false,
+    type:Boolean
+  },
+  config:{
+    default:()=>{
+      return {}
+    },
+    type:Object
   }
 })
 
 const easyPlayerRef = ref()
 
-let player:InstanceType<typeof EasyPlayerPro> | null = null
+let player = ref<InstanceType<typeof EasyPlayerPro> | null>(null)
 onMounted(()=>{
-  player = new EasyPlayerPro(easyPlayerRef.value)
-  debugger
+  player.value = new EasyPlayerPro(easyPlayerRef.value,{
+    isLive:props.isLive,
+    isNotMute:!props.mute,
+    stretch:props.stretch,
+    ...props.config
+  })
   if(props.autoplay){
-    player.play(props.url)
+    player.value.play(props.url)
   }
 })
 onUnmounted(()=>{
-  if(player&&!player.isDestroy){
-    player.destroy()
+  if(player&&!player.value?.isDestroy){
+    player.value?.destroy()
   }
+})
+
+defineExpose({
+  player
 })
 </script>
 
 <template>
-<div ref="easyPlayerRef" class="easy-player"></div>
+<div ref="easyPlayerRef"></div>
 </template>
 
 <style scoped>
-.easy-player{
-  width: 100%;
-  height: 100%;
-}
 </style>
