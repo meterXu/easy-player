@@ -1,7 +1,7 @@
-# easy-player-pro
+# vue-easy-player
 
 ## 简介
-基于EasyPlayer.js的二次封装，增加类型说明，支持在前端工程项目中安装使用。
+基于vue3的EasyPlayer.js二次封装。
 
 EasyPlayer.js H5播放器，是一款能够同时支持HTTP、HTTP-FLV、HLS（m3u8）、WS、WEBRTC、FMP4视频直播与视频点播等多种协议，支持H.264、H.265、AAC、G711A、Mp3等多种音视频编码格式，支持MSE、WASM、WebCodec等多种解码方式，支持Windows、Linux、Android、iOS全平台终端的H5播放器，使用简单, 功能强大。
 
@@ -9,23 +9,22 @@ EasyPlayer.js H5播放器，是一款能够同时支持HTTP、HTTP-FLV、HLS（m
 
 **安装**
 ```bash
-npm i easy-player-pro
+npm i vue-easy-player
 # or
-yarn add easy-player-pro
+yarn add vue-easy-player
 ```
 **使用**
-```javascript
-import EasyPlayer from "easy-player-pro";
-// 初始化
-const easyPalyer = new EasyPlayer("#palyer-box",{
-    isMute:true,
-    hasAuto:false
-})
-// 事件监听
-easyPalyer.onPlay=()=>{
-    console.log('play event');
-}
+```vue
+<script>
+  import VueEasyPlayer from "vue-easy-player";
+</script>
+<template>
+  <VueEasyPlayer  src=""></VueEasyPlayer>
+</template>
+
 ```
+
+
 **vite配置**
 ```javascript
 import easyPlayer from 'vite-plugin-easy-player'

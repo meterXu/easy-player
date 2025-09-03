@@ -1,0 +1,26 @@
+{
+  "name": "vue-easy-player",
+  "version": "0.1.1",
+  "description": "easy-player for vue",
+  "main": "index.js",
+  "scripts": {
+  },
+  "keywords": [],
+  "author": "isaac <xhgainxq@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/meterXu/easy-player"
+  },
+  "bugs": {
+    "url": "https://github.com/meterXu/easy-player/issues"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "vue": "^3.5.18"
+  },
+  "devDependencies": {
+  },
+  "peerDependencies": {
+    "easy-player": "^0.1.1"
+  }
+}
