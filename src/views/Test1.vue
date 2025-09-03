@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {ref, onMounted,onUnmounted} from 'vue'
-import EasyPlayer,{type VideoInfo,type AudioInfo} from "../packages/easy-player/src/index.ts";
+import EasyPlayer,{type VideoInfo,type AudioInfo} from "@/packages/easy-player-pro/src/index.ts";
 
 const playerRef = ref()
 const isMute = ref(true)

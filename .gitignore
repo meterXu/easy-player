@@ -21,4 +21,4 @@ dist
 *.njsproj
 *.sln
 *.sw?
-src/packages/easy-player/lib
+src/packages/easy-player-pro/lib
