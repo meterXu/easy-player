@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {ref, onMounted} from 'vue'
-
+import VueEasyPlayerPro from "@/packages/vue-easy-player-pro";
 const playerRef = ref()
 const isMute = ref(true)
 const isPause = ref(true)
@@ -58,7 +58,7 @@ onMounted(() => {
     </div>
 
     <div class="player_box">
-      <VueEasyPlayer :url="url"></VueEasyPlayer>
+      <VueEasyPlayerPro :url="url" :autoplay="true"></VueEasyPlayerPro>
     </div>
   </main>
 </template>

@@ -1,8 +1,8 @@
 {
-  "name": "vue-easy-player",
+  "name": "vue-easy-player-pro",
   "version": "0.1.1",
-  "description": "easy-player for vue",
-  "main": "index.js",
+  "description": "easy-player-pro for vue",
+  "main": "index.ts",
   "scripts": {
   },
   "keywords": [],

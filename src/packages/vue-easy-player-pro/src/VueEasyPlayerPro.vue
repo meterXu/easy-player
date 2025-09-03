@@ -1,19 +1,36 @@
 <script setup lang="ts">
-import {ref,onMounted} from "vue";
+import {ref, onMounted, onUnmounted} from "vue";
 import EasyPlayerPro from "easy-player-pro";
 
 const props = defineProps({
+  url:{
+    default:'',
+    type:String
+  },
   isLive:{
     default:true,
     type:Boolean
   },
+  autoplay:{
+    default:false,
+    type:Boolean
+  }
 })
 
 const easyPlayerRef = ref()
 
-let player = null
+let player:InstanceType<typeof EasyPlayerPro> | null = null
 onMounted(()=>{
   player = new EasyPlayerPro(easyPlayerRef.value)
+  debugger
+  if(props.autoplay){
+    player.play(props.url)
+  }
+})
+onUnmounted(()=>{
+  if(player&&!player.isDestroy){
+    player.destroy()
+  }
 })
 </script>
 
