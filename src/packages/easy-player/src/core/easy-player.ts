@@ -36,37 +36,37 @@ export class EasyPlayer {
     /**
      * 视频信息回调
      */
-    public onVideoInfo = () => {
+    public onVideoInfo = (videoInfo: VideoInfo) => {
     }
     /**
      * 音频信息回调
      */
-    public onAudioInfo = () => {
+    public onAudioInfo = (audioInfo:AudioInfo) => {
     }
     /**
      * 全屏事件
      */
-    public onFullscreen = () => {
+    public onFullscreen = (isFullscreen:boolean) => {
     }
     /**
      * 音频开关事件
      */
-    public onMute = () => {
+    public onMute = (isMute:boolean) => {
     }
     /**
      * 当前网速，单位KB每秒1次
      */
-    public onKBps = () => {
+    public onKBps = (KBps:number) => {
     }
     /**
      * 切换拉伸事件
      */
-    public onStretch = () => {
+    public onStretch = (isStretch:boolean) => {
     }
     /**
      * PTZ事件
      */
-    public onPtz = () => {
+    public onPTZ = (ptz:any) => {
     }
     /**
      * 截图回调
@@ -106,7 +106,7 @@ export class EasyPlayer {
     /**
      * 清晰度回调
      */
-    public onQualityChange = () => {
+    public onQualityChange = (quality:string) => {
     }
     /**
      * 录像时间轴跳转回调
@@ -126,34 +126,34 @@ export class EasyPlayer {
     /**
      * 播放异常回调
      */
-    public onError = () => {
+    public onError = (err:any) => {
     }
 
     constructor(container: HTMLElement, config?: EasyPlayerConfig) {
         this.config = merge({}, defaultConfig, config)
         this.player = new window.EasyPlayerPro(container, this.config);
         this.isDestroy = false;
-        this.player.on('play', this.onPlay)
-        this.player.on('pause', this.onPause)
-        this.player.on('videoInfo', this.onVideoInfo)
-        this.player.on('audioInfo', this.onAudioInfo)
-        this.player.on('fullscreen', this.onFullscreen)
-        this.player.on('mute', this.onMute)
-        this.player.on('kBps', this.onKBps)
-        this.player.on('stretch', this.onStretch)
-        this.player.on('ptz', this.onPtz)
-        this.player.on('screenshots', this.onScreenshots)
-        this.player.on('contextmenuClose', this.onContextmenuClose)
-        this.player.on('decodeHevc', this.onDecodeHevc)
-        this.player.on('liveEnd', this.onLiveEnd)
-        this.player.on('timeout', this.onTimeout)
-        this.player.on('recordEnd', this.onRecordEnd)
-        this.player.on('recordStart', this.onRecordStart)
-        this.player.on('qualityChange', this.onQualityChange)
-        this.player.on('playbackSeek', this.onPlaybackSeek)
-        this.player.on('playbackRate', this.onPlaybackRate)
-        this.player.on('timestamps', this.onTimestamps)
-        this.player.on('error', this.onError)
+        this.player.on('play', ()=>this.onPlay())
+        this.player.on('pause', ()=>this.onPause())
+        this.player.on('videoInfo', (videoInfo:VideoInfo)=>this.onVideoInfo(videoInfo))
+        this.player.on('audioInfo', (audioInfo:AudioInfo)=>this.onAudioInfo(audioInfo))
+        this.player.on('fullscreen', (isFullscreen:boolean)=>this.onFullscreen(isFullscreen))
+        this.player.on('mute', (isMute:boolean)=>this.onMute(isMute))
+        this.player.on('kBps', (KBps:number)=>this.onKBps(KBps))
+        this.player.on('stretch', (isStretch:boolean)=>this.onStretch(isStretch))
+        this.player.on('ptz', (ptz:any)=>this.onPTZ(ptz))
+        this.player.on('screenshots', ()=>this.onScreenshots())
+        this.player.on('contextmenuClose', ()=>this.onContextmenuClose())
+        this.player.on('decodeHevc', ()=>this.onDecodeHevc())
+        this.player.on('liveEnd', ()=>this.onLiveEnd())
+        this.player.on('timeout', ()=>this.onTimeout())
+        this.player.on('recordEnd', ()=>this.onRecordEnd())
+        this.player.on('recordStart', ()=>this.onRecordStart())
+        this.player.on('qualityChange', (quality:string)=>this.onQualityChange(quality))
+        this.player.on('playbackSeek', ()=>this.onPlaybackSeek())
+        this.player.on('playbackRate', ()=>this.onPlaybackRate())
+        this.player.on('timestamps', ()=>this.onTimestamps())
+        this.player.on('error', (err:any)=>this.onError(err))
     }
 
     /**

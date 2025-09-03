@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {ref, onMounted,onUnmounted} from 'vue'
-import EasyPlayer from "easy-player";
+import EasyPlayer,{type VideoInfo,type AudioInfo} from "../packages/easy-player/src/index.ts";
 
 const playerRef = ref()
 const isMute = ref(true)
@@ -13,6 +13,69 @@ const audioInfo = ref()
 let easyPlayer = null as any
 onMounted(() => {
   easyPlayer = new EasyPlayer(playerRef.value)
+  easyPlayer.onPlay=()=>{
+    console.log('play event')
+  }
+  easyPlayer.onPause=()=>{
+    console.log('pause event')
+  }
+  easyPlayer.onVideoInfo=(videoInfo:VideoInfo)=>{
+    console.log(`videoInfo event,${JSON.stringify(videoInfo)}`)
+  }
+  easyPlayer.onAudioInfo=(audioInfo:AudioInfo)=>{
+    console.log(`audioInfo event,${JSON.stringify(audioInfo)}`)
+  }
+  easyPlayer.onFullscreen=(isFullscreen:boolean)=>{
+    console.log(`fullscreen event,${isFullscreen}`)
+  }
+  easyPlayer.onMute=(isMute:boolean)=>{
+    console.log(`mute event,${isMute}`)
+  }
+  // easyPlayer.onKBps=(KBps:number)=>{
+  //   console.log(`kBps event,${KBps}`)
+  // }
+  easyPlayer.onStretch=(isStretch:boolean)=>{
+    console.log(`stretch event,${isStretch}`)
+  }
+  easyPlayer.onPTZ=(ptz:any)=>{
+    console.log(`ptz event,${ptz}`)
+  }
+  easyPlayer.onScreenshots=()=>{
+    console.log(`screenshots event`)
+  }
+  easyPlayer.onContextmenuClose=()=>{
+    console.log(`contextmenuClose event`)
+  }
+  easyPlayer.onDecodeHevc=()=>{
+    console.log(`decodeHevc event`)
+  }
+  easyPlayer.onLiveEnd=()=>{
+    console.log('liveEnd event')
+  }
+  easyPlayer.onTimeout=()=>{
+    console.log('timeout event')
+  }
+  easyPlayer.onRecordEnd=()=>{
+    console.log('recordEnd event')
+  }
+  easyPlayer.onRecordStart=()=>{
+    console.log('recordStart event')
+  }
+  easyPlayer.onQualityChange=(quality:string)=>{
+    console.log(`qualityChange event,${quality}`)
+  }
+  easyPlayer.onPlaybackSeek=()=>{
+    console.log('playbackSeek event')
+  }
+  easyPlayer.onPlaybackRate=()=>{
+    console.log('playbackRate event')
+  }
+  easyPlayer.onTimestamps=()=>{
+    console.log('timestamps event')
+  }
+  easyPlayer.onError=(err:any)=>{
+    console.log(`error event,${err}`)
+  }
 })
 
 onUnmounted(()=>{
