@@ -8,9 +8,9 @@ export const defaultConfig = {
      */
     hasAudio:true,
     /**
-     * 是否不静音
+     * 是否渲染音频
      */
-    isNotMute:false,
+    isMute:false,
     /**
      * 视频拉伸
      */
