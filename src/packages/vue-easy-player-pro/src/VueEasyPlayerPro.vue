@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {onMounted, onUnmounted, ref, shallowReactive} from "vue";
 import type {PropType} from 'vue'
-import EasyPlayerPro from "@/packages/easy-player-pro";
+import EasyPlayerPro from "easy-player-pro";
 
 const props = defineProps({
   urls: {
@@ -74,59 +74,56 @@ defineExpose({
 </script>
 
 <template>
-  <div ref="playerWrapRef" class="player_container" :class="`player_container_${props.split}`">
+  <div ref="playerWrapRef" class="easy-player-pro player_container" :class="`easy-player-pro_${props.split}`">
     <div class="player-item" v-for="(item,index) in props.split" :key="index">
       <div class="player-box" ref="easyPlayerRef"></div>
     </div>
   </div>
 </template>
-
 <style scoped>
-.player_container {
+.easy-player-pro {
   display: grid;
 }
-
-.player_container_1 {
+.easy-player-pro.easy-player-pro_1{
   grid-template-columns: 1fr;
   grid-template-rows: 1fr;
 }
-
-.player_container_2 {
+.easy-player-pro.easy-player-pro_2 {
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr;
 }
 
-.player_container_4 {
+.easy-player-pro.easy-player-pro_4 {
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr;
 }
 
-.player_container_9 {
+.easy-player-pro.easy-player-pro_9 {
   grid-template-columns: 1fr 1fr 1fr;
   grid-template-rows: 1fr 1fr 1fr;
 }
 
-.player_container_16 {
+.easy-player-pro.easy-player-pro_16 {
   grid-template-columns: 1fr 1fr 1fr 1fr;
   grid-template-rows: 1fr 1fr 1fr 1fr;
 }
 
-.player_container_25 {
+.easy-player-pro.easy-player-pro_25 {
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
   grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
 }
 
-.player_container_36 {
+.easy-player-pro.easy-player-pro_36 {
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
   grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;
 }
 
-.player-item {
+.easy-player-pro .player-item {
   position: relative;
   padding-bottom: 56%;
 }
 
-.player-box {
+.easy-player-pro .player-box {
   position: absolute;
   height: 100%;
   top: 0;

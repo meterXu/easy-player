@@ -1,0 +1,4 @@
+{
+  "include": ["src/**/*", "src/**/*.vue"],
+  "exclude": ["node_modules", "src/**/__tests__/*"]
+}
