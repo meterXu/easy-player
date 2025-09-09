@@ -1,35 +1,50 @@
 <script setup lang="ts">
-import {ref, onUnmounted} from 'vue'
-import VueEasyPlayerPro from "@/packages/vue-easy-player-pro";
+import {ref, onUnmounted, nextTick, shallowReactive} from 'vue'
+import VueEasyPlayerPro from "vue-easy-player-pro";
 
 const isMute = ref(true)
-const url = ref('https://sf1-cdn-tos.huoshanstatic.com/obj/media-fe/xgplayer_doc_video/hls/xgplayer-demo.m3u8')
+const urls = shallowReactive([
+  'https://sf1-cdn-tos.huoshanstatic.com/obj/media-fe/xgplayer_doc_video/hls/xgplayer-demo.m3u8'
+])
 const videoInfo = ref()
 const audioInfo = ref()
-
-let easyPlayer = ref()
+const easyPlayer = ref()
+const split = ref(1)
+const reset = ref(true)
 
 function onPlay() {
-  easyPlayer.value.map((c: any) => {
-    c.play(url.value)
+  easyPlayer.value.playerList.map((c: any,index:number) => {
+    c.play(urls[index])
   })
 }
 
 function onPause() {
-  easyPlayer.value.map((c: any) => {
+  easyPlayer.value.playerList.map((c: any,index:number) => {
     c.pause()
   })
 }
 
 function onMute() {
   isMute.value = !isMute.value
-  easyPlayer.value.map((c: any) => {
+  easyPlayer.value.playerList.map((c: any,index:number) => {
     c.setMute(isMute.value)
   })
 }
 
+function onSplit(_split:number){
+  reset.value = false
+  nextTick(()=>{
+    split.value=_split
+    urls.splice(0,urls.length)
+    urls.push(...Array.from(new Array(split.value),(_x:any,index:number)=>{
+      return "https://sf1-cdn-tos.huoshanstatic.com/obj/media-fe/xgplayer_doc_video/hls/xgplayer-demo.m3u8"
+    }))
+    reset.value = true
+  })
+}
+
 onUnmounted(() => {
-  easyPlayer.value.map((c: any) => {
+  easyPlayer.value.playerList.map((c: any) => {
     c.destroy()
   })
 })
@@ -38,25 +53,21 @@ onUnmounted(() => {
 <template>
   <main class="content-wrap">
     <div class="play-control">
-      <input v-model="url" style="width: 100%"/>
+      <input v-for="(item,index) in urls" v-model="urls[index]" style="width: 100%"/>
       <div class="play-btns">
         <button @click="onPlay">播放</button>
         <button @click="onPause">暂停</button>
         <button @click="onMute">切换静音</button>
+        <button @click="onSplit(1)">单屏</button>
+        <button @click="onSplit(2)">双屏</button>
+        <button @click="onSplit(4)">四分屏</button>
+        <button @click="onSplit(9)">九分屏</button>
+        <button @click="onSplit(16)">十六分屏</button>
       </div>
     </div>
-    <div>
-      视频信息：{{ videoInfo }}
-    </div>
-    <div>
-      音频信息：{{ audioInfo }}
-    </div>
-    <VueEasyPlayerPro class="player_wrap" ref="easyPlayer"
-                      :url="url" :autoplay="true"
-                      :split="9"
-                      :cols="3"
-                      :width="400"
-                      :height="400*0.56"
+    <VueEasyPlayerPro v-if="reset" class="player-pro" ref="easyPlayer"
+                      :urls="urls" :autoplay="true"
+                      :split="split"
     ></VueEasyPlayerPro>
   </main>
 </template>
@@ -85,5 +96,9 @@ onUnmounted(() => {
   justify-content: flex-start;
   align-items: center;
   grid-gap: 4px;
+}
+
+.player-pro {
+  width: 1200px;
 }
 </style>
