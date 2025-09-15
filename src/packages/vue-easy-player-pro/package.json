@@ -1,6 +1,6 @@
 {
   "name": "vue-easy-player-pro",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "easy-player-pro for vue",
   "main": "./dist/vue-easy-player-pro.js",
   "type": "module",
@@ -51,6 +51,6 @@
     "vite-plugin-vue-style-bundler": "^1.0.9"
   },
   "peerDependencies": {
-    "vue": "^3.5.18"
+    "vue": "^3.2.37"
   }
 }

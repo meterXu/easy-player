@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-easy-player-pro",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "description": "easy-player-pro plugin for Vite",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -50,7 +50,7 @@
     "vite": "^3.0.4"
   },
   "peerDependencies": {
-    "easy-player": "^0.1.1",
+    "easy-player-pro": "^0.1.1",
     "vite": ">=2.7.1"
   }
 }
