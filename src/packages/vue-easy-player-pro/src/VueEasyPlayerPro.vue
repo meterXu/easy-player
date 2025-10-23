@@ -47,12 +47,11 @@ const playerWrapRef = ref()
 const playerList = shallowReactive<InstanceType<typeof EasyPlayerPro>[]>([])
 onMounted(() => {
   playerList.push(...easyPlayerRef.value.map((ele: HTMLElement,index:number) => {
-    const _player = new EasyPlayerPro(ele, {
+    const _player = new EasyPlayerPro(ele, Object.assign({
       isLive: props.isLive,
       isMute: !props.mute,
       stretch: props.stretch,
-      ...props.config
-    })
+    },props.config))
     if (props.autoplay) {
       _player.play(props.urls[index])
     }
