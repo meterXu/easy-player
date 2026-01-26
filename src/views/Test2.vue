@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {ref, onUnmounted, nextTick, shallowReactive} from 'vue'
-import VueEasyPlayerPro from "@/packages/vue-easy-player-pro";
+import VueEasyPlayerPro from "@/packages/vue-easy-player-pro/src";
 
 const isMute = ref(true)
 const urls = shallowReactive([
