@@ -179,6 +179,27 @@ export class EasyPlayerPro {
                             sdk.play(url,{
                                 videoOnly:true,
                                 audioOnly:false
+                            }).then(()=>{
+                                this.player.$container.querySelectorAll('.easyplayer-controls-item').forEach((e:any)=>{
+                                    e.style.display='flex'
+                                })
+                                this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-play').style.display='none'
+                                this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-play').addEventListener('click',()=>{
+                                    this.videoElement.play()
+                                    this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-play').style.display='none'
+                                    this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-pause').style.display='flex'
+                                })
+                                this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-pause').addEventListener('click',()=>{
+                                    this.videoElement.pause()
+                                    this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-play').style.display='flex'
+                                    this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-pause').style.display='none'
+                                })
+                                this.player.$container.addEventListener('mouseenter',()=>{
+                                    this.player.$container.querySelector('.easyplayer-controls').style.opacity=1
+                                })
+                                this.player.$container.addEventListener('mouseleave',()=>{
+                                    this.player.$container.querySelector('.easyplayer-controls').style.opacity=0
+                                })
                             }).catch((err:any)=>{
                                 sdk.close();
                                 reject(err);
@@ -222,7 +243,6 @@ export class EasyPlayerPro {
         }else{
             return null
         }
-
     }
 
     /**
@@ -230,16 +250,28 @@ export class EasyPlayerPro {
      * @param isMute
      */
     setMute(isMute: boolean) {
-        this.player && this.player.setMute(isMute)
+        if(this.player){
+            if(this.isRtcSRS()){
+                this.videoElement.muted = isMute
+            }else{
+                this.player.setMute(isMute)
+            }
+        }
     }
 
     /**
      * 是否静音
      */
     isMute(): boolean | null {
-        if (!this.player)
+        if (this.player){
+            if(this.isRtcSRS()){
+                return this.videoElement.muted
+            }else{
+                return this.player.isMute()
+            }
+        }else{
             return null
-        return this.player.isMute()
+        }
     }
 
     /**
