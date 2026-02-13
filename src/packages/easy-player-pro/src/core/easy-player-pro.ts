@@ -19,6 +19,8 @@ export type AudioInfo = {
 export class EasyPlayerPro {
     private player: any = null;
     private config: EasyPlayerProConfig = {};
+    private _url=''
+    private videoElement: HTMLVideoElement;
     /**
      * 是否销毁
      */
@@ -132,6 +134,7 @@ export class EasyPlayerPro {
     constructor(container: HTMLElement, config?: EasyPlayerProConfig) {
         this.config = merge({}, defaultConfig, config)
         this.player = new window.EasyPlayerPro(container, this.config);
+        this.videoElement = this.player.$container.querySelector('video');
         this.isDestroy = false;
         this.player.on('play', ()=>this.onPlay())
         this.player.on('pause', ()=>this.onPause())
@@ -161,10 +164,29 @@ export class EasyPlayerPro {
      * @param url 播放地址
      */
     play(url: string): Promise<void> {
+        this._url = url
         return new Promise((resolve, reject) => {
             try {
                 if (this.player) {
-                    this.player.play(url).then(resolve).catch(reject)
+                    if(this.isRtcSRS()){
+                        if(this.videoElement ){
+                            this.videoElement .autoplay=true
+                            this.videoElement .controls=false
+                            this.videoElement .muted = true
+                            //@ts-ignore
+                            const sdk = new SrsRtcWhipWhepAsync();
+                            this.videoElement .srcObject = sdk.stream;
+                            sdk.play(url,{
+                                videoOnly:true,
+                                audioOnly:false
+                            }).catch((err:any)=>{
+                                sdk.close();
+                                reject(err);
+                            })
+                        }
+                    }else{
+                        this.player.play(url).then(resolve).catch(reject)
+                    }
                 } else {
                     reject('player is null')
                 }
@@ -178,16 +200,29 @@ export class EasyPlayerPro {
      * 暂停播放
      */
     pause() {
-        this.player && this.player.pause()
+        if(this.player){
+            if(this.isRtcSRS()){
+                this.videoElement.pause()
+            }else{
+                this.player.pause()
+            }
+        }
     }
 
     /**
      * 返回是否暂停中状态
      */
     isPause(): boolean | null {
-        if (!this.player)
+        if (this.player){
+            if(this.isRtcSRS()){
+                return this.videoElement.paused
+            }else{
+                return this.player.isPause()
+            }
+        }else{
             return null
-        return this.player.isPause()
+        }
+
     }
 
     /**
@@ -282,6 +317,13 @@ export class EasyPlayerPro {
      */
     setMic(isMic: boolean) {
         this.player && this.player.setMic(isMic)
+    }
+
+    /**
+     * 判断是否为SRS直播源
+     */
+    isRtcSRS(){
+        return this.config.isRtcSRS||(this._url.indexOf('/rtc/v1/whep')>-1)
     }
 
     /**

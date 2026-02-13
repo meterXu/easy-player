@@ -3,18 +3,26 @@ import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
-import easyPlayerPro from "vite-plugin-easy-player-pro"
+import easyPlayerPro from "./src/packages/vite-plugin-easy-player-pro/src/index"
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
     vue(),
     vueJsx(),
-    easyPlayerPro()
+      //@ts-ignore
+    easyPlayerPro({
+      easyPlayerBuildRootPath:'src/packages/easy-player-pro/src',
+      easyPlayerBuildDir:'build'
+    })
   ],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
+  },
+  server: {
+    host: '0.0.0.0',
+    allowedHosts: true
   },
 })

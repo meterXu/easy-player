@@ -72,6 +72,34 @@ export default function vitePluginEasyPlayerPro(options: VitePluginEasyPlayerPro
                         normalizePath(path.join(easyPlayerBuildRootPath,easyPlayerBuildDir,'EasyPlayer-pro.js')),
                 }
             });
+            tags.push({
+                tag: 'script',
+                attrs: {
+                    src: isBuild?normalizePath(path.join(EASY_PLAYER_URL, 'adapter-7.4.0.min.js')):
+                        normalizePath(path.join(easyPlayerBuildRootPath,easyPlayerBuildDir,'adapter-7.4.0.min.js')),
+                }
+            });
+            tags.push({
+                tag: 'script',
+                attrs: {
+                    src: isBuild?normalizePath(path.join(EASY_PLAYER_URL, 'srs.sdk.js')):
+                        normalizePath(path.join(easyPlayerBuildRootPath,easyPlayerBuildDir,'srs.sdk.js')),
+                }
+            });
+            tags.push({
+                tag: 'script',
+                attrs: {
+                    src: isBuild?normalizePath(path.join(EASY_PLAYER_URL, 'winlin.utility.js')):
+                        normalizePath(path.join(easyPlayerBuildRootPath,easyPlayerBuildDir,'winlin.utility.js')),
+                }
+            });
+            tags.push({
+                tag: 'script',
+                attrs: {
+                    src: isBuild?normalizePath(path.join(EASY_PLAYER_URL, 'srs.page.js')):
+                        normalizePath(path.join(easyPlayerBuildRootPath,easyPlayerBuildDir,'srs.page.js')),
+                }
+            });
             return tags;
         }
     };

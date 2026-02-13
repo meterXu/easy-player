@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {ref, onMounted,onUnmounted} from 'vue'
-import EasyPlayerPro,{type VideoInfo,type AudioInfo} from "easy-player-pro";
+import EasyPlayerPro,{type VideoInfo,type AudioInfo} from "@/packages/easy-player-pro/src/index.ts";
 
 const playerRef = ref()
 const isMute = ref(true)
@@ -31,9 +31,9 @@ onMounted(() => {
   easyPlayer.onMute=(isMute:boolean)=>{
     console.log(`mute event,${isMute}`)
   }
-  // easyPlayer.onKBps=(KBps:number)=>{
-  //   console.log(`kBps event,${KBps}`)
-  // }
+  easyPlayer.onKBps=(KBps:number)=>{
+    console.log(`kBps event,${KBps}`)
+  }
   easyPlayer.onStretch=(isStretch:boolean)=>{
     console.log(`stretch event,${isStretch}`)
   }
