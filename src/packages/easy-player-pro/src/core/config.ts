@@ -34,19 +34,19 @@ export const defaultConfig = {
     /**
      * MSE模式
      */
-    MSE:false,
+    MSE:true,
     /**
      * WCS模式
      */
-    WCS:false,
+    WCS:true,
     /**
      * WASM模式
      */
-    WASM:false,
+    WASM:true,
     /**
      * WASMSIMD模式
      */
-    WASMSIMD:false,
+    WASMSIMD:true,
     /**
      * 硬解码
      */
@@ -107,13 +107,31 @@ export const defaultConfig = {
      * PTZ配置
      */
     ptzConfig:{
-        ptz:true,
-        ptzMore:true
+        ptz:false,
+        ptzMore:false
     },
     /**
      * 控制台日志打印
      */
     debug:false,
+    /**
+     * 是否显示网络状态
+     */
+    isBand:false,
+    /**
+     * 按钮列表
+     */
+    btns:{
+        fullscreen:true,
+        screenshot:true,
+        play:true,
+        audio:true,
+        record:true,
+        stretch:true,
+        zoom:true,
+        ptz:false,
+        quality:false,
+    }
 }
 export type EasyPlayerProConfig = Partial<typeof defaultConfig>
 

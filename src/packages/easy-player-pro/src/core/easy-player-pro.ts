@@ -19,8 +19,10 @@ export type AudioInfo = {
 export class EasyPlayerPro {
     private player: any = null;
     private config: EasyPlayerProConfig = {};
-    private _url=''
+    private _url = ''
     private videoElement: HTMLVideoElement;
+    private controller: AbortController
+    private signal: AbortSignal
     /**
      * 是否销毁
      */
@@ -43,32 +45,32 @@ export class EasyPlayerPro {
     /**
      * 音频信息回调
      */
-    public onAudioInfo = (audioInfo:AudioInfo) => {
+    public onAudioInfo = (audioInfo: AudioInfo) => {
     }
     /**
      * 全屏事件
      */
-    public onFullscreen = (isFullscreen:boolean) => {
+    public onFullscreen = (isFullscreen: boolean) => {
     }
     /**
      * 音频开关事件
      */
-    public onMute = (isMute:boolean) => {
+    public onMute = (isMute: boolean) => {
     }
     /**
      * 当前网速，单位KB每秒1次
      */
-    public onKBps = (KBps:number) => {
+    public onKBps = (KBps: number) => {
     }
     /**
      * 切换拉伸事件
      */
-    public onStretch = (isStretch:boolean) => {
+    public onStretch = (isStretch: boolean) => {
     }
     /**
      * PTZ事件
      */
-    public onPTZ = (ptz:any) => {
+    public onPTZ = (ptz: any) => {
     }
     /**
      * 截图回调
@@ -108,7 +110,7 @@ export class EasyPlayerPro {
     /**
      * 清晰度回调
      */
-    public onQualityChange = (quality:string) => {
+    public onQualityChange = (quality: string) => {
     }
     /**
      * 录像时间轴跳转回调
@@ -128,35 +130,38 @@ export class EasyPlayerPro {
     /**
      * 播放异常回调
      */
-    public onError = (err:any) => {
+    public onError = (err: any) => {
     }
 
     constructor(container: HTMLElement, config?: EasyPlayerProConfig) {
         this.config = merge({}, defaultConfig, config)
         this.player = new window.EasyPlayerPro(container, this.config);
         this.videoElement = this.player.$container.querySelector('video');
+        window.videoElement = this.videoElement
         this.isDestroy = false;
-        this.player.on('play', ()=>this.onPlay())
-        this.player.on('pause', ()=>this.onPause())
-        this.player.on('videoInfo', (videoInfo:VideoInfo)=>this.onVideoInfo(videoInfo))
-        this.player.on('audioInfo', (audioInfo:AudioInfo)=>this.onAudioInfo(audioInfo))
-        this.player.on('fullscreen', (isFullscreen:boolean)=>this.onFullscreen(isFullscreen))
-        this.player.on('mute', (isMute:boolean)=>this.onMute(isMute))
-        this.player.on('kBps', (KBps:number)=>this.onKBps(KBps))
-        this.player.on('stretch', (isStretch:boolean)=>this.onStretch(isStretch))
-        this.player.on('ptz', (ptz:any)=>this.onPTZ(ptz))
-        this.player.on('screenshots', ()=>this.onScreenshots())
-        this.player.on('contextmenuClose', ()=>this.onContextmenuClose())
-        this.player.on('decodeHevc', ()=>this.onDecodeHevc())
-        this.player.on('liveEnd', ()=>this.onLiveEnd())
-        this.player.on('timeout', ()=>this.onTimeout())
-        this.player.on('recordEnd', ()=>this.onRecordEnd())
-        this.player.on('recordStart', ()=>this.onRecordStart())
-        this.player.on('qualityChange', (quality:string)=>this.onQualityChange(quality))
-        this.player.on('playbackSeek', ()=>this.onPlaybackSeek())
-        this.player.on('playbackRate', ()=>this.onPlaybackRate())
-        this.player.on('timestamps', ()=>this.onTimestamps())
-        this.player.on('error', (err:any)=>this.onError(err))
+        this.controller = new AbortController();
+        this.signal = this.controller.signal;
+        this.player.on('play', () => this.onPlay())
+        this.player.on('pause', () => this.onPause())
+        this.player.on('videoInfo', (videoInfo: VideoInfo) => this.onVideoInfo(videoInfo))
+        this.player.on('audioInfo', (audioInfo: AudioInfo) => this.onAudioInfo(audioInfo))
+        this.player.on('fullscreen', (isFullscreen: boolean) => this.onFullscreen(isFullscreen))
+        this.player.on('mute', (isMute: boolean) => this.onMute(isMute))
+        this.player.on('kBps', (KBps: number) => this.onKBps(KBps))
+        this.player.on('stretch', (isStretch: boolean) => this.onStretch(isStretch))
+        this.player.on('ptz', (ptz: any) => this.onPTZ(ptz))
+        this.player.on('screenshots', () => this.onScreenshots())
+        this.player.on('contextmenuClose', () => this.onContextmenuClose())
+        this.player.on('decodeHevc', () => this.onDecodeHevc())
+        this.player.on('liveEnd', () => this.onLiveEnd())
+        this.player.on('timeout', () => this.onTimeout())
+        this.player.on('recordEnd', () => this.onRecordEnd())
+        this.player.on('recordStart', () => this.onRecordStart())
+        this.player.on('qualityChange', (quality: string) => this.onQualityChange(quality))
+        this.player.on('playbackSeek', () => this.onPlaybackSeek())
+        this.player.on('playbackRate', () => this.onPlaybackRate())
+        this.player.on('timestamps', () => this.onTimestamps())
+        this.player.on('error', (err: any) => this.onError(err))
     }
 
     /**
@@ -168,45 +173,40 @@ export class EasyPlayerPro {
         return new Promise((resolve, reject) => {
             try {
                 if (this.player) {
-                    if(this.isRtcSRS()){
-                        if(this.videoElement ){
-                            this.videoElement .autoplay=true
-                            this.videoElement .controls=false
-                            this.videoElement .muted = true
+                    if (this.isRtcSRS()) {
+                        this.player.$container.querySelector('.easyplayer-loading').style.display = 'flex'
+                        this.player.player._opt.url = url
+                        if (this.videoElement) {
+                            this.videoElement.autoplay = true
+                            this.videoElement.controls = false
+                            this.videoElement.muted = true
+                            this.player.player._opt.isWebrtcForSRS = true
+                            this.player.player._opt.isWebrtc = true
+                            this.player.player._opt.rtcSdp = true
                             //@ts-ignore
                             const sdk = new SrsRtcWhipWhepAsync();
-                            this.videoElement .srcObject = sdk.stream;
-                            sdk.play(url,{
-                                videoOnly:true,
-                                audioOnly:false
-                            }).then(()=>{
-                                this.player.$container.querySelectorAll('.easyplayer-controls-item').forEach((e:any)=>{
-                                    e.style.display='flex'
-                                })
-                                this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-play').style.display='none'
-                                this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-play').addEventListener('click',()=>{
-                                    this.videoElement.play()
-                                    this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-play').style.display='none'
-                                    this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-pause').style.display='flex'
-                                })
-                                this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-pause').addEventListener('click',()=>{
-                                    this.videoElement.pause()
-                                    this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-play').style.display='flex'
-                                    this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-pause').style.display='none'
-                                })
-                                this.player.$container.addEventListener('mouseenter',()=>{
-                                    this.player.$container.querySelector('.easyplayer-controls').style.opacity=1
-                                })
-                                this.player.$container.addEventListener('mouseleave',()=>{
-                                    this.player.$container.querySelector('.easyplayer-controls').style.opacity=0
-                                })
-                            }).catch((err:any)=>{
+                            sdk.play(url, {
+                                videoOnly: true,
+                                audioOnly: false
+                            }).then(() => {
+                                setTimeout(() => {
+                                    this.videoElement.srcObject = sdk.stream;
+                                    this.player.player.playing = true
+                                    this.bindWebRTCDomEvent()
+                                    resolve()
+                                }, 1000)
+                            }).catch((err: any) => {
                                 sdk.close();
                                 reject(err);
                             })
                         }
-                    }else{
-                        this.player.play(url).then(resolve).catch(reject)
+                    } else {
+                        this.player.play(url).then(() => {
+                            setTimeout(() => {
+                                this.player.$container.querySelector('.easyplayer-controls-code-wrap').style.display = 'none'
+                                resolve()
+                            }, 300)
+                        }).catch(reject)
                     }
                 } else {
                     reject('player is null')
@@ -217,14 +217,70 @@ export class EasyPlayerPro {
         })
     }
 
+    private _play() {
+        this.player.$container.querySelector('.easyplayer-loading').style.display = 'flex'
+        setTimeout(() => {
+            this.videoElement.play()
+            this.player.player.playing = true
+            this._hideNode()
+            this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-play').style.display = 'none'
+            this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-pause').style.display = 'flex'
+        }, 500)
+    }
+
+    private _pause() {
+        this.videoElement.pause()
+        this.player.player.playing = false
+        this._hideNode()
+        this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-play').style.display = 'flex'
+        this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-pause').style.display = 'none'
+    }
+
+    private _hideNode() {
+        // hide
+        this.player.$container.querySelector('.easyplayer-play').style.display = 'none'
+        this.player.$container.querySelector('.easyplayer-controls-code-wrap').style.display = 'none'
+        this.player.$container.querySelector('.easyplayer-record-stop').style.display = 'none'
+        this.player.$container.querySelector('.easyplayer-zoom-stop').style.display = 'none'
+        if (this.player.$container.querySelector('.easyplayer-fullscreen').style.display === 'flex') {
+            this.player.$container.querySelector('.easyplayer-fullscreen-exit').style.display = 'none'
+        }
+    }
+
+    private _playerContainerMouseEnter() {
+        this.player.$container.querySelector('.easyplayer-controls').style.opacity = 1
+    }
+
+    private _playerContainerMouseLeave() {
+        this.player.$container.querySelector('.easyplayer-controls').style.opacity = 0
+    }
+
+    private bindWebRTCDomEvent() {
+        this.player.$container.addEventListener('mouseenter', () => this._playerContainerMouseEnter.call(this), {signal: this.signal})
+        this.player.$container.addEventListener('mouseleave', () => this._playerContainerMouseLeave.call(this), {signal: this.signal})
+        this.player.$container.querySelectorAll('.easyplayer-controls-item').forEach((target: HTMLElement) => {
+            if (target.classList.contains('easyplayer-play') || target.classList.contains('easyplayer-pause')) {
+                target.replaceWith(target.cloneNode(true));
+            }
+            target.style.display = 'flex'
+        })
+        this._hideNode()
+        // play & pause
+        this.player.$container.querySelector('.easyplayer-play').addEventListener('click', () => this._play.call(this), {signal: this.signal})
+        this.player.$container.querySelector('.easyplayer-pause').addEventListener('click', () => this._pause.call(this), {signal: this.signal})
+        this.player.$container.querySelector('.easyplayer-play-big').addEventListener('click', () => this._play.call(this), {signal: this.signal})
+    }
+
     /**
      * 暂停播放
      */
     pause() {
-        if(this.player){
-            if(this.isRtcSRS()){
+        if (this.player) {
+            if (this.isRtcSRS()) {
                 this.videoElement.pause()
-            }else{
+                this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-play').style.display = 'flex'
+                this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-pause').style.display = 'none'
+            } else {
                 this.player.pause()
             }
         }
@@ -234,13 +290,13 @@ export class EasyPlayerPro {
      * 返回是否暂停中状态
      */
     isPause(): boolean | null {
-        if (this.player){
-            if(this.isRtcSRS()){
+        if (this.player) {
+            if (this.isRtcSRS()) {
                 return this.videoElement.paused
-            }else{
+            } else {
                 return this.player.isPause()
             }
-        }else{
+        } else {
             return null
         }
     }
@@ -250,10 +306,12 @@ export class EasyPlayerPro {
      * @param isMute
      */
     setMute(isMute: boolean) {
-        if(this.player){
-            if(this.isRtcSRS()){
+        if (this.player) {
+            if (this.isRtcSRS()) {
                 this.videoElement.muted = isMute
-            }else{
+                this.player.$container.querySelector('.easyplayer-icon-audio').style.display = isMute ? 'none' : 'flex'
+                this.player.$container.querySelector('.easyplayer-icon-mute').style.display = isMute ? 'flex' : 'none'
+            } else {
                 this.player.setMute(isMute)
             }
         }
@@ -263,13 +321,13 @@ export class EasyPlayerPro {
      * 是否静音
      */
     isMute(): boolean | null {
-        if (this.player){
-            if(this.isRtcSRS()){
+        if (this.player) {
+            if (this.isRtcSRS()) {
                 return this.videoElement.muted
-            }else{
+            } else {
                 return this.player.isMute()
             }
-        }else{
+        } else {
             return null
         }
     }
@@ -354,15 +412,21 @@ export class EasyPlayerPro {
     /**
      * 判断是否为SRS直播源
      */
-    isRtcSRS(){
-        return this.config.isRtcSRS||(this._url.indexOf('/rtc/v1/whep')>-1)
+    isRtcSRS() {
+        return this.config.isRtcSRS || (this._url.indexOf('/rtc/v1/whep') > -1)
     }
 
     /**
      * 关闭视频，释放底层资源
      */
     destroy() {
-        this.player && this.player.destroy()
+
+        if (this.player) {
+            if (this.isRtcSRS()) {
+                this.controller.abort()
+            }
+            this.player.destroy()
+        }
         this.player = null
         this.isDestroy = true
     }
