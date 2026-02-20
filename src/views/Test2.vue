@@ -4,7 +4,7 @@ import VueEasyPlayerPro from "@/packages/vue-easy-player-pro/src/index.ts";
 
 const isMute = ref(true)
 const urls = shallowReactive([
-  'https://sf1-cdn-tos.huoshanstatic.com/obj/media-fe/xgplayer_doc_video/hls/xgplayer-demo.m3u8'
+  'http://172.16.21.228:1985/rtc/v1/whep/?app=live&stream=test'
 ])
 const videoInfo = ref()
 const audioInfo = ref()
@@ -37,7 +37,7 @@ function onSplit(_split:number){
     split.value=_split
     urls.splice(0,urls.length)
     urls.push(...Array.from(new Array(split.value),(_x:any,index:number)=>{
-      return "https://sf1-cdn-tos.huoshanstatic.com/obj/media-fe/xgplayer_doc_video/hls/xgplayer-demo.m3u8"
+      return "http://172.16.21.228:1985/rtc/v1/whep/?app=live&stream=test"
     }))
     reset.value = true
   })
@@ -66,7 +66,7 @@ onUnmounted(() => {
       </div>
     </div>
     <VueEasyPlayerPro v-if="reset" class="player-pro" ref="easyPlayer"
-                      :urls="urls" :autoplay="true"
+                      :urls="urls" :autoplay="false"
                       :split="split"
     ></VueEasyPlayerPro>
   </main>
