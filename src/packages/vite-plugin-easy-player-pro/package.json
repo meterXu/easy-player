@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-easy-player-pro",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "easy-player-pro plugin for Vite",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
