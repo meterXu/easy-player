@@ -1,6 +1,6 @@
 {
   "name": "easy-player-pro",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "easy-player-pro 是一款能够同时支持HTTP、HTTP-FLV、HLS（m3u8）、WS、WEBRTC、FMP4视频直播与视频点播等多种协议，支持H.264、H.265、AAC、G711A、Mp3等多种音视频编码格式，支持MSE、WASM、WebCodec等多种解码方式，支持Windows、Linux、Android、iOS全平台终端的H5播放器，使用简单, 功能强大",
   "type": "module",
   "module": "./lib/index.js",

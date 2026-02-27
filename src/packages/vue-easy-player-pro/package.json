@@ -1,6 +1,6 @@
 {
   "name": "vue-easy-player-pro",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "easy-player-pro for vue",
   "main": "./dist/vue-easy-player-pro.js",
   "type": "module",
@@ -40,7 +40,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "easy-player-pro": "^0.1.6"
+    "easy-player-pro": "^0.1.7"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.1",

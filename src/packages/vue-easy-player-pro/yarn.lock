@@ -678,10 +678,10 @@ dunder-proto@^1.0.0, dunder-proto@^1.0.1:
     es-errors "^1.3.0"
     gopd "^1.2.0"
 
-easy-player-pro@^0.1.6:
-  version "0.1.6"
-  resolved "https://registry.npmjs.org/easy-player-pro/-/easy-player-pro-0.1.6.tgz#ede6fc4a0f088f4822d0b46b4f8524fb2a11c84c"
-  integrity sha512-c5l3dQfXCtFsxxbKCua85oUHo+bB5Q5GuPjUnfNW+hLM5/JESZvWZnGpkW1uslvkyrzs9GYCQEJELBnxj9yDAA==
+easy-player-pro@^0.1.7:
+  version "0.1.7"
+  resolved "https://registry.npmjs.org/easy-player-pro/-/easy-player-pro-0.1.7.tgz#392822751323edf5dee321440a8c458cf23b078d"
+  integrity sha512-yp0mFFyNl9hMVQw1JdkSNBMnzsH1btR1KN45ufrJs5TwupWOjRLZ2VqHKgVA91YbKMfKsBO1P9z4V9UYRGtOJg==
   dependencies:
     lodash-es "^4.17.21"
 

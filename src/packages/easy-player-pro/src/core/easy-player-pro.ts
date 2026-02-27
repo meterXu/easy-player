@@ -140,8 +140,14 @@ export class EasyPlayerPro {
         this.isDestroy = false;
         this.controller = new AbortController();
         this.signal = this.controller.signal;
-        this.player.on('play', () => this.onPlay())
-        this.player.on('pause', () => this.onPause())
+        this.player.on('play', () => {
+            this.player.$container.querySelector('.easyplayer-controls-code-wrap').style.display = 'none'
+            this.onPlay()
+        })
+        this.player.on('pause', () => {
+            this.player.$container.querySelector('.easyplayer-controls-code-wrap').style.display = 'none'
+            this.onPause()
+        })
         this.player.on('videoInfo', (videoInfo: VideoInfo) => this.onVideoInfo(videoInfo))
         this.player.on('audioInfo', (audioInfo: AudioInfo) => this.onAudioInfo(audioInfo))
         this.player.on('fullscreen', (isFullscreen: boolean) => this.onFullscreen(isFullscreen))
@@ -202,7 +208,6 @@ export class EasyPlayerPro {
                     } else {
                         this.player.play(url).then(() => {
                             setTimeout(() => {
-                                this.player.$container.querySelector('.easyplayer-controls-code-wrap').style.display = 'none'
                                 resolve()
                             }, 300)
                         }).catch(reject)
