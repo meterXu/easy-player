@@ -137,7 +137,6 @@ export class EasyPlayerPro {
         this.config = merge({}, defaultConfig, config)
         this.player = new window.EasyPlayerPro(container, this.config);
         this.videoElement = this.player.$container.querySelector('video');
-        window.videoElement = this.videoElement
         this.isDestroy = false;
         this.controller = new AbortController();
         this.signal = this.controller.signal;
