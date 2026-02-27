@@ -1,0 +1,4 @@
+.easyplayer-container .easyplayer-play-big:after, .easyplayer-container .easyplayer-play-big:hover:after{
+    background-image:url("../img/icon-play.svg");
+    background-size: 48px;
+}

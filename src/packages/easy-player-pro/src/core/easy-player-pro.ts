@@ -172,7 +172,7 @@ export class EasyPlayerPro {
         return new Promise((resolve, reject) => {
             try {
                 if (this.player) {
-                    if (this.isRtcSRS()) {
+                    if (this._isRtcSRS()) {
                         this.player.$container.querySelector('.easyplayer-loading').style.display = 'flex'
                         this.player.player._opt.url = url
                         if (this.videoElement) {
@@ -275,7 +275,7 @@ export class EasyPlayerPro {
      */
     pause() {
         if (this.player) {
-            if (this.isRtcSRS()) {
+            if (this._isRtcSRS()) {
                 this.videoElement.pause()
                 this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-play').style.display = 'flex'
                 this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-pause').style.display = 'none'
@@ -290,7 +290,7 @@ export class EasyPlayerPro {
      */
     isPause(): boolean | null {
         if (this.player) {
-            if (this.isRtcSRS()) {
+            if (this._isRtcSRS()) {
                 return this.videoElement.paused
             } else {
                 return this.player.isPause()
@@ -306,7 +306,7 @@ export class EasyPlayerPro {
      */
     setMute(isMute: boolean) {
         if (this.player) {
-            if (this.isRtcSRS()) {
+            if (this._isRtcSRS()) {
                 this.videoElement.muted = isMute
                 this.player.$container.querySelector('.easyplayer-icon-audio').style.display = isMute ? 'none' : 'flex'
                 this.player.$container.querySelector('.easyplayer-icon-mute').style.display = isMute ? 'flex' : 'none'
@@ -321,7 +321,7 @@ export class EasyPlayerPro {
      */
     isMute(): boolean | null {
         if (this.player) {
-            if (this.isRtcSRS()) {
+            if (this._isRtcSRS()) {
                 return this.videoElement.muted
             } else {
                 return this.player.isMute()
@@ -411,7 +411,7 @@ export class EasyPlayerPro {
     /**
      * 判断是否为SRS直播源
      */
-    isRtcSRS() {
+    private _isRtcSRS() {
         return this.config.isRtcSRS || (this._url.indexOf('/rtc/v1/whep') > -1)
     }
 
@@ -421,7 +421,7 @@ export class EasyPlayerPro {
     destroy() {
 
         if (this.player) {
-            if (this.isRtcSRS()) {
+            if (this._isRtcSRS()) {
                 this.controller.abort()
             }
             this.player.destroy()
