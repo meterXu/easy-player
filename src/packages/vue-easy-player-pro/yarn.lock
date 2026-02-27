@@ -678,13 +678,6 @@ dunder-proto@^1.0.0, dunder-proto@^1.0.1:
     es-errors "^1.3.0"
     gopd "^1.2.0"
 
-easy-player-pro@^0.1.7:
-  version "0.1.7"
-  resolved "https://registry.npmjs.org/easy-player-pro/-/easy-player-pro-0.1.7.tgz#392822751323edf5dee321440a8c458cf23b078d"
-  integrity sha512-yp0mFFyNl9hMVQw1JdkSNBMnzsH1btR1KN45ufrJs5TwupWOjRLZ2VqHKgVA91YbKMfKsBO1P9z4V9UYRGtOJg==
-  dependencies:
-    lodash-es "^4.17.21"
-
 entities@^4.5.0:
   version "4.5.0"
   resolved "https://registry.npmmirror.com/entities/-/entities-4.5.0.tgz#5d268ea5e7113ec74c4d033b79ea5a35a488fb48"
@@ -1208,11 +1201,6 @@ local-pkg@^1.0.0:
     mlly "^1.7.4"
     pkg-types "^2.3.0"
     quansync "^0.2.11"
-
-lodash-es@^4.17.21:
-  version "4.17.21"
-  resolved "https://registry.npmmirror.com/lodash-es/-/lodash-es-4.17.21.tgz#43e626c46e6591b7750beb2b50117390c609e3ee"
-  integrity sha512-mKnC+QJ9pWVzv+C4/U3rRsHapFfHvQFoFB92e52xeyGMcX6/OlIl78je1u8vePzYZSkkogMPJ2yjxxsb89cxyw==
 
 lodash@~4.17.15:
   version "4.17.21"

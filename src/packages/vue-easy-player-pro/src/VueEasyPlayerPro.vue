@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {onMounted, onUnmounted, ref, shallowReactive} from "vue";
 import type {PropType} from 'vue'
-import EasyPlayerPro from "easy-player-pro";
+import EasyPlayerPro from "../../easy-player-pro/src/index";
 
 const props = defineProps({
   urls: {
