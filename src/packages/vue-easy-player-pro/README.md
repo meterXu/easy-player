@@ -9,9 +9,11 @@ EasyPlayer.js H5播放器，是一款能够同时支持HTTP、HTTP-FLV、HLS（m
 
 **安装**
 ```bash
+npm i easy-player-pro
 npm i vue-easy-player-pro
 npm i -D vite-plugin-easy-player-pro
 # or
+yarn add easy-player-pro
 yarn add vue-easy-player-pro
 yarn add vite-plugin-easy-player-pro -D
 ```
