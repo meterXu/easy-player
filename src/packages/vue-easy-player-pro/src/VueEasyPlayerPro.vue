@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import {onMounted, onUnmounted, ref, shallowReactive} from "vue";
+import {nextTick, onMounted, onUnmounted, ref, shallowReactive, watch} from "vue";
 import type {PropType} from 'vue'
+import {EasyPlayerProConfigType, EasyPlayerProType} from "../../easy-player-pro/src/index";
 import EasyPlayerPro from "../../easy-player-pro/src/index";
-
 const props = defineProps({
   urls: {
     default: [],
@@ -37,15 +37,16 @@ const props = defineProps({
     default: () => {
       return {}
     },
-    type: Object as PropType<InstanceType<typeof EasyPlayerPro>>
+    type: Object as PropType<EasyPlayerProConfigType>
   }
 })
 
 const easyPlayerRef = ref()
 const playerWrapRef = ref()
+const reset = ref(true)
+const playerList = shallowReactive<EasyPlayerProType[]>([])
 
-const playerList = shallowReactive<InstanceType<typeof EasyPlayerPro>[]>([])
-onMounted(() => {
+function initPlayerList(){
   playerList.push(...easyPlayerRef.value.map((ele: HTMLElement,index:number) => {
     const _player = new EasyPlayerPro(ele, Object.assign({
       isLive: props.isLive,
@@ -55,16 +56,37 @@ onMounted(() => {
     if (props.autoplay) {
       _player.play(props.urls[index])
     }
-    return _player
+    return _player as unknown as EasyPlayerProType
   }))
-})
-onUnmounted(() => {
+}
+
+function cleanPlayerList(){
   playerList.map(player => {
     if (!player.isDestroy) {
       player.destroy()
     }
   })
   playerList.splice(0, playerList.length)
+}
+
+watch(()=>props.split,(nv)=>{
+  if(nv){
+    reset.value = false
+    cleanPlayerList()
+    nextTick(()=>{
+      reset.value = true
+      nextTick(()=>{
+        initPlayerList()
+      })
+    })
+  }
+})
+onMounted(() => {
+  initPlayerList()
+})
+
+onUnmounted(() => {
+  cleanPlayerList()
 })
 
 defineExpose({
@@ -74,8 +96,10 @@ defineExpose({
 
 <template>
   <div ref="playerWrapRef" class="easy-player-pro player_container" :class="`easy-player-pro_${props.split}`">
-    <div class="player-item" v-for="(item,index) in props.split" :key="index">
+    <div v-if="reset" class="player-item" v-for="(item,index) in props.split" :key="index">
       <div class="player-box" ref="easyPlayerRef"></div>
+      <slot :index="index" :player="playerList[index]">
+      </slot>
     </div>
   </div>
 </template>

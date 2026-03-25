@@ -1,14 +1,14 @@
 import {type EasyPlayerProConfig, defaultConfig} from "./config";
 import {merge} from 'lodash-es'
 
-export type VideoInfo = {
+export type VideoInfoType = {
     encType: string
     encTypeCode: number,
     height: number,
     width: number
 }
 
-export type AudioInfo = {
+export type AudioInfoType = {
     encTypeCode: string
     encType: string,
     channels: number,
@@ -40,12 +40,12 @@ export class EasyPlayerPro {
     /**
      * 视频信息回调
      */
-    public onVideoInfo = (videoInfo: VideoInfo) => {
+    public onVideoInfo = (videoInfo: VideoInfoType) => {
     }
     /**
      * 音频信息回调
      */
-    public onAudioInfo = (audioInfo: AudioInfo) => {
+    public onAudioInfo = (audioInfo: AudioInfoType) => {
     }
     /**
      * 全屏事件
@@ -148,8 +148,8 @@ export class EasyPlayerPro {
             this.player.$container.querySelector('.easyplayer-controls-code-wrap').style.display = 'none'
             this.onPause()
         })
-        this.player.on('videoInfo', (videoInfo: VideoInfo) => this.onVideoInfo(videoInfo))
-        this.player.on('audioInfo', (audioInfo: AudioInfo) => this.onAudioInfo(audioInfo))
+        this.player.on('videoInfo', (videoInfo: VideoInfoType) => this.onVideoInfo(videoInfo))
+        this.player.on('audioInfo', (audioInfo: AudioInfoType) => this.onAudioInfo(audioInfo))
         this.player.on('fullscreen', (isFullscreen: boolean) => this.onFullscreen(isFullscreen))
         this.player.on('mute', (isMute: boolean) => this.onMute(isMute))
         this.player.on('kBps', (KBps: number) => this.onKBps(KBps))
@@ -390,7 +390,7 @@ export class EasyPlayerPro {
     /**
      * 获取视频信息
      */
-    getVideoInfo(): VideoInfo | null {
+    getVideoInfo(): VideoInfoType | null {
         if (!this.player)
             return null
         return this.player.getVideoInfo()
@@ -399,7 +399,7 @@ export class EasyPlayerPro {
     /**
      * 获取音频信息
      */
-    getAudioInfo(): AudioInfo | null {
+    getAudioInfo(): AudioInfoType | null {
         if (!this.player)
             return null
         return this.player.getAudioInfo()
@@ -434,4 +434,44 @@ export class EasyPlayerPro {
         this.player = null
         this.isDestroy = true
     }
+}
+
+export interface EasyPlayerProType{
+    isDestroy:boolean,
+    onPlay:() => void,
+    onPause:() => void,
+    onVideoInfo:(videoInfo: VideoInfoType)=>void,
+    onAudioInfo:(audioInfo: AudioInfoType)=>void,
+    onFullscreen:(isFullscreen: boolean)=>void,
+    onMute:(isMute: boolean)=>void,
+    onKBps:(KBps: number)=>void,
+    onStretch:(isStretch: boolean)=>void,
+    onPTZ:(ptz: any)=>void,
+    onScreenshots:()=>void,
+    onContextmenuClose:()=>void,
+    onDecodeHevc:()=>void,
+    onLiveEnd:()=>void,
+    onTimeout:()=>void,
+    onRecordEnd:()=>void,
+    onRecordStart:()=>void,
+    onQualityChange:(quality: string)=>void,
+    onPlaybackSeek:()=>void,
+    onPlaybackRate:()=>void,
+    onTimestamps:()=>void,
+    onError:(err: any)=>void,
+    play:(url: string)=>Promise<void>,
+    pause:()=>void,
+    isPause:()=>boolean,
+    setMute:(isMute: boolean)=>void,
+    isMute:()=>boolean|null,
+    screenshot:(name?: string, type?: string, rato?: number, format?: string)=>string | Blob | null,
+    setFullscreen:(isFullscreen: boolean)=>void,
+    exitFullscreen:()=>void,
+    setQuality:(quality: string)=>void,
+    setRate:(rate: number)=>void,
+    seekTime:(time: number)=>void,
+    getVideoInfo:()=>VideoInfoType | null,
+    getAudioInfo:()=>AudioInfoType | null,
+    setMic:(isMic: boolean)=>void,
+    destroy:()=>void
 }

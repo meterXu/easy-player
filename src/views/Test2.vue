@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ref, onUnmounted, nextTick, shallowReactive} from 'vue'
+import {ref, onUnmounted, nextTick, shallowReactive, onMounted} from 'vue'
 import VueEasyPlayerPro from "@/packages/vue-easy-player-pro/src/index.ts";
 
 const isMute = ref(true)
@@ -65,10 +65,14 @@ onUnmounted(() => {
         <button @click="onSplit(16)">十六分屏</button>
       </div>
     </div>
-    <VueEasyPlayerPro v-if="reset" class="player-pro" ref="easyPlayer"
+    <VueEasyPlayerPro class="player-pro" ref="easyPlayer"
                       :urls="urls" :autoplay="false"
                       :split="split"
-    ></VueEasyPlayerPro>
+    >
+      <template v-slot="{player,index}">
+        <div style="position: absolute;">{{index}}</div>
+      </template>
+    </VueEasyPlayerPro>
   </main>
 </template>
 
