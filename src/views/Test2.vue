@@ -1,33 +1,40 @@
 <script setup lang="ts">
-import {ref, onUnmounted, nextTick, shallowReactive, onMounted} from 'vue'
+import {ref, onUnmounted, nextTick, shallowReactive, useTemplateRef} from 'vue'
 import VueEasyPlayerPro from "@/packages/vue-easy-player-pro/src/index.ts";
+import type {EasyPlayerProType} from "@/packages/easy-player-pro/src";
 
 const isMute = ref(true)
 const urls = shallowReactive([
-  'http://172.16.21.228:1985/rtc/v1/whep/?app=live&stream=test'
+  'https://sf1-cdn-tos.huoshanstatic.com/obj/media-fe/xgplayer_doc_video/hls/xgplayer-demo.m3u8'
 ])
 const videoInfo = ref()
 const audioInfo = ref()
-const easyPlayer = ref()
+const easyPlayer = useTemplateRef<{playerList:EasyPlayerProType[]}>('easyPlayer')
 const split = ref(1)
 const reset = ref(true)
 
 function onPlay() {
-  easyPlayer.value.playerList.map((c: any,index:number) => {
+  easyPlayer.value?.playerList.map((c,index:number) => {
     c.play(urls[index])
   })
 }
 
 function onPause() {
-  easyPlayer.value.playerList.map((c: any,index:number) => {
+  easyPlayer.value?.playerList.map((c,index:number) => {
     c.pause()
   })
 }
 
 function onMute() {
   isMute.value = !isMute.value
-  easyPlayer.value.playerList.map((c: any,index:number) => {
+  easyPlayer.value?.playerList.map((c,index:number) => {
     c.setMute(isMute.value)
+  })
+}
+
+function onClose(){
+  easyPlayer.value?.playerList.map((c,index:number) => {
+    c.close()
   })
 }
 
@@ -37,14 +44,14 @@ function onSplit(_split:number){
     split.value=_split
     urls.splice(0,urls.length)
     urls.push(...Array.from(new Array(split.value),(_x:any,index:number)=>{
-      return "http://172.16.21.228:1985/rtc/v1/whep/?app=live&stream=test"
+      return "https://sf1-cdn-tos.huoshanstatic.com/obj/media-fe/xgplayer_doc_video/hls/xgplayer-demo.m3u8"
     }))
     reset.value = true
   })
 }
 
 onUnmounted(() => {
-  easyPlayer.value.playerList.map((c: any) => {
+  easyPlayer.value?.playerList.map((c) => {
     c.destroy()
   })
 })
@@ -58,6 +65,7 @@ onUnmounted(() => {
         <button @click="onPlay">播放</button>
         <button @click="onPause">暂停</button>
         <button @click="onMute">切换静音</button>
+        <button @click="onClose">关闭</button>
         <button @click="onSplit(1)">单屏</button>
         <button @click="onSplit(2)">双屏</button>
         <button @click="onSplit(4)">四分屏</button>

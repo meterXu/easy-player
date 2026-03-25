@@ -19,6 +19,7 @@ export type AudioInfoType = {
 export class EasyPlayerPro {
     private player: any = null;
     private config: EasyPlayerProConfig = {};
+    private container: HTMLElement;
     private _url = ''
     private videoElement: HTMLVideoElement;
     private controller: AbortController
@@ -135,7 +136,8 @@ export class EasyPlayerPro {
 
     constructor(container: HTMLElement, config?: EasyPlayerProConfig) {
         this.config = merge({}, defaultConfig, config)
-        this.player = new window.EasyPlayerPro(container, this.config);
+        this.container = container
+        this.player = new window.EasyPlayerPro(this.container, this.config);
         this.videoElement = this.player.$container.querySelector('video');
         this.isDestroy = false;
         this.controller = new AbortController();
@@ -424,15 +426,22 @@ export class EasyPlayerPro {
      * 关闭视频，释放底层资源
      */
     destroy() {
-
-        if (this.player) {
-            if (this._isRtcSRS()) {
-                this.controller.abort()
+        try{
+            if (this.player) {
+                if (this._isRtcSRS()) {
+                    this.controller.abort()
+                }
+                this.player.destroy().catch(()=>{})
             }
-            this.player.destroy()
-        }
-        this.player = null
-        this.isDestroy = true
+            this.player = null
+            this.container.innerHTML = ''
+            this.container.removeAttribute('data--easy-prov')
+            this.isDestroy = true
+        }catch (error) {}
+    }
+    close(){
+        this.destroy()
+        this.player = new window.EasyPlayerPro(this.container, this.config);
     }
 }
 
@@ -473,5 +482,6 @@ export interface EasyPlayerProType{
     getVideoInfo:()=>VideoInfoType | null,
     getAudioInfo:()=>AudioInfoType | null,
     setMic:(isMic: boolean)=>void,
-    destroy:()=>void
+    destroy:()=>void,
+    close:()=>void,
 }
