@@ -1,6 +1,6 @@
 {
   "name": "vue-easy-player-pro",
-  "version": "0.1.18",
+  "version": "0.1.19",
   "description": "easy-player-pro for vue",
   "main": "./dist/vue-easy-player-pro.js",
   "type": "module",

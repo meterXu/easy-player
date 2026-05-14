@@ -1,45 +1,17 @@
 <script setup lang="ts">
 import {nextTick, onMounted, onUnmounted, ref, shallowReactive, watch} from "vue";
-import type {PropType} from 'vue'
 import {EasyPlayerProConfigType, EasyPlayerProType} from "../../easy-player-pro/src/index";
 import EasyPlayerPro from "../../easy-player-pro/src/index";
-const props = defineProps({
-  urls: {
-    default: [],
-    type: [] as PropType<string[]>
-  },
-  isLive: {
-    default: true,
-    type: Boolean
-  },
-  autoplay: {
-    default: false,
-    type: Boolean
-  },
-  hasAudio: {
-    default: true,
-    type: Boolean
-  },
-  mute: {
-    default: true,
-    type: Boolean
-  },
-  stretch: {
-    default: false,
-    type: Boolean
-  },
-  split: {
-    default: 1,
-    type: Number,
-    values: [1, 4, 9, 16, 25, 66]
-  },
-  config: {
-    default: () => {
-      return {}
-    },
-    type: Object as PropType<EasyPlayerProConfigType>|PropType<EasyPlayerProConfigType>[]
-  }
-})
+const {urls=[],isLive=true,autoplay=false,hasAudio=true,mute=true,stretch=false,split=1,config={}} = defineProps<{
+  urls: string[],
+  isLive: boolean,
+  autoplay: boolean,
+  hasAudio: boolean,
+  mute: boolean,
+  stretch: boolean,
+  split: number,
+  config: EasyPlayerProConfigType|EasyPlayerProConfigType[]
+}>()
 
 const easyPlayerRef = ref()
 const playerWrapRef = ref()
@@ -49,12 +21,12 @@ const playerList = shallowReactive<EasyPlayerProType[]>([])
 function initPlayerList(){
   playerList.push(...easyPlayerRef.value.map((ele: HTMLElement,index:number) => {
     const _player = new EasyPlayerPro(ele, Object.assign({
-      isLive: props.isLive,
-      isMute: !props.mute,
-      stretch: props.stretch,
-    }, props.config instanceof Array ? props.config[index] : props.config))
-    if (props.autoplay) {
-      _player.play(props.urls[index])
+      isLive: isLive,
+      isMute: !mute,
+      stretch: stretch,
+    }, config instanceof Array ? config[index] : config))
+    if (autoplay) {
+      _player.play(urls[index])
     }
     return _player as unknown as EasyPlayerProType
   }))
@@ -69,7 +41,7 @@ function cleanPlayerList(){
   playerList.splice(0, playerList.length)
 }
 
-watch(()=>props.split,(nv)=>{
+watch(()=>split,(nv)=>{
   if(nv){
     reset.value = false
     cleanPlayerList()
@@ -95,8 +67,8 @@ defineExpose({
 </script>
 
 <template>
-  <div ref="playerWrapRef" class="easy-player-pro player_container" :class="`easy-player-pro_${props.split}`">
-    <div v-if="reset" class="player-item" v-for="(item,index) in props.split" :key="index">
+  <div ref="playerWrapRef" class="easy-player-pro player_container" :class="`easy-player-pro_${split}`">
+    <div v-if="reset" class="player-item" v-for="(item,index) in split" :key="index">
       <div class="player-box" ref="easyPlayerRef"></div>
       <slot :index="index" :player="playerList[index]">
       </slot>

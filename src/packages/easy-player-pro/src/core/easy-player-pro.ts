@@ -141,6 +141,7 @@ export class EasyPlayerPro {
             }
         })
         this.container = container
+        //@ts-ignore
         this.player = new window.EasyPlayerPro(this.container, this.config);
         this.videoElement = this.player.$container.querySelector('video');
         this.isDestroy = false;
@@ -445,6 +446,7 @@ export class EasyPlayerPro {
     }
     close(){
         this.destroy()
+        //@ts-ignore
         this.player = new window.EasyPlayerPro(this.container, this.config);
     }
 }
