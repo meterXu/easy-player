@@ -37,7 +37,7 @@ const props = defineProps({
     default: () => {
       return {}
     },
-    type: Object as PropType<EasyPlayerProConfigType>
+    type: Object as PropType<EasyPlayerProConfigType>|PropType<EasyPlayerProConfigType>[]
   }
 })
 
@@ -52,7 +52,7 @@ function initPlayerList(){
       isLive: props.isLive,
       isMute: !props.mute,
       stretch: props.stretch,
-    },props.config))
+    }, props.config instanceof Array ? props.config[index] : props.config))
     if (props.autoplay) {
       _player.play(props.urls[index])
     }
