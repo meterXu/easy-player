@@ -3,14 +3,14 @@ import {nextTick, onMounted, onUnmounted, ref, shallowReactive, watch} from "vue
 import {EasyPlayerProConfigType, EasyPlayerProType} from "../../easy-player-pro/src/index";
 import EasyPlayerPro from "../../easy-player-pro/src/index";
 const {urls=[],isLive=true,autoplay=false,hasAudio=true,mute=true,stretch=false,split=1,config={}} = defineProps<{
-  urls: string[],
-  isLive: boolean,
-  autoplay: boolean,
-  hasAudio: boolean,
-  mute: boolean,
-  stretch: boolean,
-  split: number,
-  config: EasyPlayerProConfigType|EasyPlayerProConfigType[]
+  urls?: string[],
+  isLive?: boolean,
+  autoplay?: boolean,
+  hasAudio?: boolean,
+  mute?: boolean,
+  stretch?: boolean,
+  split?: number,
+  config?: EasyPlayerProConfigType|EasyPlayerProConfigType[]
 }>()
 
 const easyPlayerRef = ref()
