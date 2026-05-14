@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import {ref, onUnmounted, nextTick, shallowReactive, useTemplateRef} from 'vue'
+import {ref, onUnmounted, nextTick, shallowReactive, useTemplateRef, reactive, watch} from 'vue'
 import VueEasyPlayerPro from "@/packages/vue-easy-player-pro/src/index.ts";
 import type {EasyPlayerProType} from "@/packages/easy-player-pro/src";
+import {func} from "ts-interface-checker";
 
 const isMute = ref(true)
 const urls = shallowReactive([
@@ -12,10 +13,26 @@ const audioInfo = ref()
 const easyPlayer = useTemplateRef<{playerList:EasyPlayerProType[]}>('easyPlayer')
 const split = ref(1)
 const reset = ref(true)
+const playerConfigs = reactive([{
+  btns:{ quality: true },
+  quality:['低清','高清']
+}])
+
+watch(split, (newVal) => {
+  playerConfigs.splice(0, playerConfigs.length,...Array.from({ length: newVal },(_,i)=>{
+    return {
+      btns:{ quality: true },
+      quality:['低清','高清']
+    }
+  }))
+})
 
 function onPlay() {
   easyPlayer.value?.playerList.map((c,index:number) => {
     c.play(urls[index])
+    c.onQualityChange=function(quality){
+      console.log(quality)
+    }
   })
 }
 
@@ -50,6 +67,12 @@ function onSplit(_split:number){
   })
 }
 
+function onSetQualityList(qualityList:string[]){
+  easyPlayer.value?.playerList.map((c) => {
+    c.setQualityList(qualityList)
+  })
+}
+
 onUnmounted(() => {
   easyPlayer.value?.playerList.map((c) => {
     c.destroy()
@@ -71,9 +94,11 @@ onUnmounted(() => {
         <button @click="onSplit(4)">四分屏</button>
         <button @click="onSplit(9)">九分屏</button>
         <button @click="onSplit(16)">十六分屏</button>
+        <button @click="onSetQualityList(['2x','4x','6x'])">设置分辨率列表</button>
       </div>
     </div>
     <VueEasyPlayerPro class="player-pro" ref="easyPlayer"
+                      :config="playerConfigs as any"
                       :urls="urls" :autoplay="false"
                       :split="split"
     >

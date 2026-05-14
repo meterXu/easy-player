@@ -53,6 +53,7 @@ watch(()=>split,(nv)=>{
     })
   }
 })
+
 onMounted(() => {
   initPlayerList()
 })

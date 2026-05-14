@@ -380,6 +380,46 @@ export class EasyPlayerPro {
     }
 
     /**
+     *  设置分辨率列表
+     * @param qualityList
+     * @param quality
+     */
+    setQualityList(qualityList: string[],quality?:string) {
+        const _quality = quality||qualityList[0]
+        const easyPlayerQualityMenu  = this.player.$container.querySelector('.easyplayer-quality-menu')
+        if(easyPlayerQualityMenu){
+            const easyPlayerQualityIconText = easyPlayerQualityMenu.querySelector('.easyplayer-quality-icon-text')
+            const easyPlayerQualityMenuList = easyPlayerQualityMenu.querySelector('.easyplayer-quality-menu-list')
+            if(qualityList.length>0){
+                if(easyPlayerQualityIconText){
+                    easyPlayerQualityIconText.innerText=_quality
+                    this.setQuality(_quality)
+                }
+                if(easyPlayerQualityMenuList){
+                    easyPlayerQualityMenuList.innerHTML=''
+                    easyPlayerQualityMenuList.append(...qualityList.map(c=>{
+                        const item = document.createElement('div')
+                        item.innerText=c
+                        item.setAttribute('data-quality', c);
+                        item.classList.add('easyplayer-quality-menu-item')
+                        if(c===_quality){
+                            item.classList.add('easyplayer-quality-menu-item-active')
+                        }
+                        item.addEventListener('click', (event:MouseEvent)=>{
+                            easyPlayerQualityMenuList.querySelectorAll('.easyplayer-quality-menu-item').forEach((c:Element)=>{
+                                c.classList.remove('easyplayer-quality-menu-item-active')
+                            })
+                            //@ts-ignore
+                            event.currentTarget && event.currentTarget.classList.add('easyplayer-quality-menu-item-active')
+                        })
+                        return item
+                    }))
+                }
+            }
+        }
+    }
+
+    /**
      * 设置录像倍数
      * @param rate
      */
@@ -483,6 +523,7 @@ export interface EasyPlayerProType{
     setFullscreen:(isFullscreen: boolean)=>void,
     exitFullscreen:()=>void,
     setQuality:(quality: string)=>void,
+    setQualityList:(quality: string[])=>void,
     setRate:(rate: number)=>void,
     seekTime:(time: number)=>void,
     getVideoInfo:()=>VideoInfoType | null,
