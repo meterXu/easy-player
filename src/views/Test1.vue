@@ -6,12 +6,13 @@ const playerRef = ref()
 const isMute = ref(true)
 const isPause = ref(false)
 const isFullscreen = ref(false)
-const url = ref('http://172.16.21.228:1985/rtc/v1/whep/?app=live&stream=test')
+const url = ref('https://sf1-cdn-tos.huoshanstatic.com/obj/media-fe/xgplayer_doc_video/hls/xgplayer-demo.m3u8')
 const videoInfo = ref()
 const audioInfo = ref()
 
 let easyPlayer = null as any
 onMounted(() => {
+  //@ts-ignore
   easyPlayer = new EasyPlayerPro(playerRef.value)
   easyPlayer.onPlay=()=>{
     console.log('play event')

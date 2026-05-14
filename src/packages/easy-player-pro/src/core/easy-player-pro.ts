@@ -1,5 +1,5 @@
 import {type EasyPlayerProConfig, defaultConfig} from "./config";
-import {merge} from 'lodash-es'
+import {mergeWith} from 'lodash-es'
 
 export type VideoInfoType = {
     encType: string
@@ -135,7 +135,11 @@ export class EasyPlayerPro {
     }
 
     constructor(container: HTMLElement, config?: EasyPlayerProConfig) {
-        this.config = merge({}, defaultConfig, config)
+        this.config = mergeWith({}, defaultConfig, config,(objValue, srcValue) => {
+            if (Array.isArray(objValue)) {
+                return srcValue;
+            }
+        })
         this.container = container
         this.player = new window.EasyPlayerPro(this.container, this.config);
         this.videoElement = this.player.$container.querySelector('video');
