@@ -523,7 +523,7 @@ export interface EasyPlayerProType{
     setFullscreen:(isFullscreen: boolean)=>void,
     exitFullscreen:()=>void,
     setQuality:(quality: string)=>void,
-    setQualityList:(quality: string[])=>void,
+    setQualityList:(qualityList: string[],quality?:string)=>void,
     setRate:(rate: number)=>void,
     seekTime:(time: number)=>void,
     getVideoInfo:()=>VideoInfoType | null,
