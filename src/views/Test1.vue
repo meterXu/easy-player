@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import {ref, onMounted,onUnmounted} from 'vue'
+//@ts-ignore
 import EasyPlayerPro,{type VideoInfo,type AudioInfo} from "@/packages/easy-player-pro/src/index.ts";
 
 const playerRef = ref()

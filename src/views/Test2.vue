@@ -2,7 +2,6 @@
 import {ref, onUnmounted, nextTick, shallowReactive, useTemplateRef, reactive, watch} from 'vue'
 import VueEasyPlayerPro from "@/packages/vue-easy-player-pro/src/index.ts";
 import type {EasyPlayerProType} from "@/packages/easy-player-pro/src";
-import {func} from "ts-interface-checker";
 
 const isMute = ref(true)
 const urls = shallowReactive([
