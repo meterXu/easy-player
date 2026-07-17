@@ -39,6 +39,17 @@ export class EasyPlayerPro {
     public onPause = () => {
     }
     /**
+     * 双击获取位置回调
+     */
+    public onDblclickPosition = (position: {
+        x: number|null;
+        y: number|null;
+        width: number;
+        height: number;
+        isOnVideo: boolean;
+    }) => {
+    }
+    /**
      * 视频信息回调
      */
     public onVideoInfo = (videoInfo: VideoInfoType) => {
@@ -174,6 +185,71 @@ export class EasyPlayerPro {
         this.player.on('playbackRate', () => this.onPlaybackRate())
         this.player.on('timestamps', () => this.onTimestamps())
         this.player.on('error', (err: any) => this.onError(err))
+        if(!this.config.supportDblclickFullscreen){
+            this.player.$container.addEventListener('dblclick', (event: MouseEvent) => {
+                event.stopPropagation();
+                event.preventDefault();
+                const target = event.target as HTMLElement;
+                if (target && (target.tagName === 'CANVAS' || target.tagName === 'VIDEO')) {
+                    const rect = target.getBoundingClientRect();
+                    const x = event.clientX - rect.left;
+                    const y = event.clientY - rect.top;
+                    const videoWidth = this.player.player.video.videoInfo.width;
+                    const videoHeight = this.player.player.video.videoInfo.height;
+
+                    let videoX: number | null = null;
+                    let videoY: number | null = null;
+                    let isOnVideo = false;
+
+                    if (videoWidth && videoHeight) {
+                        if (this.player.player._opt.isResize) {
+                            // 标准模式：视频保持宽高比居中，需要计算实际画面区域
+                            const videoAspect = videoWidth / videoHeight;
+                            const containerAspect = rect.width / rect.height;
+                            let displayWidth: number;
+                            let displayHeight: number;
+                            let offsetLeft: number;
+                            let offsetTop: number;
+
+                            if (containerAspect > videoAspect) {
+                                // 容器更宽 → 视频高度填满，水平居中（上下黑边）
+                                displayHeight = rect.height;
+                                displayWidth = rect.height * videoAspect;
+                                offsetLeft = (rect.width - displayWidth) / 2;
+                                offsetTop = 0;
+                            } else {
+                                // 容器更高 → 视频宽度填满，垂直居中（左右黑边）
+                                displayWidth = rect.width;
+                                displayHeight = rect.width / videoAspect;
+                                offsetLeft = 0;
+                                offsetTop = (rect.height - displayHeight) / 2;
+                            }
+
+                            // 判断双击点是否落在实际视频画面上
+                            if (x >= offsetLeft && x <= offsetLeft + displayWidth &&
+                                y >= offsetTop && y <= offsetTop + displayHeight) {
+                                videoX = ((x - offsetLeft) / displayWidth) * videoWidth;
+                                videoY = ((y - offsetTop) / displayHeight) * videoHeight;
+                                isOnVideo = true;
+                            }
+                        } else {
+                            // 拉伸模式：视频填满整个容器，按比例映射
+                            videoX = (x / rect.width) * videoWidth;
+                            videoY = (y / rect.height) * videoHeight;
+                            isOnVideo = true;
+                        }
+                    }
+
+                    this.onDblclickPosition({
+                        x:videoX,
+                        y:videoY,
+                        width: videoWidth,
+                        height: videoHeight,
+                        isOnVideo,
+                    });
+                }
+            }, {signal: this.signal, capture: true})
+        }
     }
 
     /**
@@ -495,6 +571,13 @@ export interface EasyPlayerProType{
     isDestroy:boolean,
     onPlay:() => void,
     onPause:() => void,
+    onDblclickPosition:(position: {
+        x: number|null;
+        y: number|null;
+        width: number;
+        height: number;
+        isOnVideo: boolean;
+    }) => void,
     onVideoInfo:(videoInfo: VideoInfoType)=>void,
     onAudioInfo:(audioInfo: AudioInfoType)=>void,
     onFullscreen:(isFullscreen: boolean)=>void,

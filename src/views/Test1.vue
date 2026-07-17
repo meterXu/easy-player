@@ -78,6 +78,9 @@ onMounted(() => {
   easyPlayer.onError=(err:any)=>{
     console.log(`error event,${err}`)
   }
+  easyPlayer.onDblclickPosition=(position:any)=>{
+    console.log(`dblclickPosition event,${JSON.stringify(position)}`)
+  }
 })
 
 onUnmounted(()=>{

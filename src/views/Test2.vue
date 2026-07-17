@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ref, onUnmounted, nextTick, shallowReactive, useTemplateRef, reactive, watch} from 'vue'
+import {ref, onUnmounted, nextTick, shallowReactive, useTemplateRef, reactive, watch, onMounted} from 'vue'
 import VueEasyPlayerPro from "@/packages/vue-easy-player-pro/src/index.ts";
 import type {EasyPlayerProType} from "@/packages/easy-player-pro/src";
 
@@ -7,8 +7,6 @@ const isMute = ref(true)
 const urls = shallowReactive([
   'https://sf1-cdn-tos.huoshanstatic.com/obj/media-fe/xgplayer_doc_video/hls/xgplayer-demo.m3u8'
 ])
-const videoInfo = ref()
-const audioInfo = ref()
 const easyPlayer = useTemplateRef<{playerList:EasyPlayerProType[]}>('easyPlayer')
 const split = ref(1)
 const reset = ref(true)

@@ -119,6 +119,10 @@ export const defaultConfig = {
      */
     isBand:false,
     /**
+     * 是否双击全屏
+     */
+    supportDblclickFullscreen:false,
+    /**
      * 按钮列表
      */
     btns:{
