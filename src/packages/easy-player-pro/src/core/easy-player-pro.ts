@@ -172,6 +172,10 @@ export class EasyPlayerPro {
             if(!this.config.hasControl){
                 this.player.$container.querySelector('.easyplayer-controls').style.display = 'none'
             }
+            if(this.player.isFullscreen()) {
+                this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-fullscreen').style.display = 'none'
+                this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-fullscreen-exit').style.display = 'flex'
+            }
             this.onPlay()
         })
         this.player.on('pause', () => {
@@ -375,6 +379,10 @@ export class EasyPlayerPro {
             this._hideNode()
             this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-play').style.display = 'none'
             this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-pause').style.display = 'flex'
+            if(this.player.isFullscreen()) {
+                this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-fullscreen').style.display = 'none'
+                this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-fullscreen-exit').style.display = 'flex'
+            }
         }, 500)
     }
 
@@ -384,6 +392,10 @@ export class EasyPlayerPro {
         this._hideNode()
         this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-play').style.display = 'flex'
         this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-pause').style.display = 'none'
+        if(this.player.isFullscreen()) {
+            this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-fullscreen').style.display = 'none'
+            this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-fullscreen-exit').style.display = 'flex'
+        }
     }
 
     private _hideNode() {
