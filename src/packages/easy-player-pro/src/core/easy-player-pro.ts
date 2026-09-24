@@ -16,13 +16,14 @@ export type AudioInfoType = {
     depth: string,
 }
 
-export type ZoomSelectInfo = {
+export type ZoomSelectInfoType = {
     x: number;
     y: number;
     width: number;
     height: number;
     videoWidth: number;
     videoHeight: number;
+    isOnVideo:boolean;
 }
 
 export class EasyPlayerPro {
@@ -104,7 +105,7 @@ export class EasyPlayerPro {
      */
     public onContextmenuClose = () => {
     }
-    public onZoomSelect = (_info: ZoomSelectInfo): boolean | void => {
+    public onZoomSelect = (_info: ZoomSelectInfoType): boolean | void => {
     }
     /**
      * 视频编码回调
@@ -444,13 +445,42 @@ export class EasyPlayerPro {
             const height = Math.abs(point.y - scaleObj.sy);
             const videoWidth = this.player.player.video.videoInfo.width;
             const videoHeight = this.player.player.video.videoInfo.height;
+            if (videoWidth && videoHeight) {
+                const rect = canvas.getBoundingClientRect();
+                if (this.player.player._opt.isResize) {
+                    const videoAspect = videoWidth / videoHeight;
+                    const containerAspect = rect.width / rect.height;
+                    let displayWidth: number;
+                    let displayHeight: number;
+                    let offsetLeft: number;
+                    let offsetTop: number;
+
+                    if (containerAspect > videoAspect) {
+                        displayHeight = rect.height;
+                        displayWidth = rect.height * videoAspect;
+                        offsetLeft = (rect.width - displayWidth) / 2;
+                        offsetTop = 0;
+                    } else {
+                        displayWidth = rect.width;
+                        displayHeight = rect.width / videoAspect;
+                        offsetLeft = 0;
+                        offsetTop = (rect.height - displayHeight) / 2;
+                    }
+
+                    isOnVideo = x >= offsetLeft && x + width <= offsetLeft + displayWidth &&
+                        y >= offsetTop && y + height <= offsetTop + displayHeight;
+                } else {
+                    isOnVideo = x >= 0 && x + width <= rect.width && y >= 0 && y + height <= rect.height;
+                }
+            }
             this.onZoomSelect({
                 x: x * point.scaleX,
                 y: y * point.scaleY,
                 width: width * point.scaleX,
                 height: height * point.scaleY,
                 videoWidth,
-                videoHeight
+                videoHeight,
+                isOnVideo
             })
             event.stopImmediatePropagation();
             event.preventDefault();
