@@ -177,7 +177,7 @@ export class EasyPlayerPro {
                 this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-fullscreen').style.display = 'none'
                 this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-fullscreen-exit').style.display = 'flex'
             }
-            this.player.$container.querySelector('.easyplayer-zoom').addEventListener('click', () => this._bindZoomSelectCallback.call(this), {signal: this.signal})
+            this.player.$container.querySelector('.easyplayer-zoom')?.addEventListener('click', () => this._bindZoomSelectCallback.call(this), {signal: this.signal})
             this.onPlay()
         })
         this.player.on('pause', () => {
