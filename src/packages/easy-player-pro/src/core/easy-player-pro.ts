@@ -21,6 +21,8 @@ export type ZoomSelectInfo = {
     y: number;
     width: number;
     height: number;
+    videoWidth: number;
+    videoHeight: number;
 }
 
 export class EasyPlayerPro {
@@ -380,6 +382,7 @@ export class EasyPlayerPro {
         const canvas = scaleCanvasLoaders.$scaleCanvas as HTMLCanvasElement;
         if (this.zoomSelectBoundCanvas === canvas) return;
         this.zoomSelectBoundCanvas = canvas;
+        let isOnVideo = false;
         const getCanvasPoint = (event: MouseEvent) => {
             const rect = canvas.getBoundingClientRect();
             return {
@@ -439,11 +442,15 @@ export class EasyPlayerPro {
             const y = Math.min(scaleObj.sy, point.y);
             const width = Math.abs(point.x - scaleObj.sx);
             const height = Math.abs(point.y - scaleObj.sy);
+            const videoWidth = this.player.player.video.videoInfo.width;
+            const videoHeight = this.player.player.video.videoInfo.height;
             this.onZoomSelect({
                 x: x * point.scaleX,
                 y: y * point.scaleY,
                 width: width * point.scaleX,
                 height: height * point.scaleY,
+                videoWidth,
+                videoHeight
             })
             event.stopImmediatePropagation();
             event.preventDefault();
