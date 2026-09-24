@@ -84,7 +84,6 @@ onMounted(() => {
   }
   easyPlayer.onZoomSelect=(info:ZoomSelectInfo)=>{
     console.log(info)
-    return false
   }
 })
 

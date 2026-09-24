@@ -31,6 +31,7 @@ export class EasyPlayerPro {
     private videoElement: HTMLVideoElement;
     private controller: AbortController
     private signal: AbortSignal
+    private zoomSelectBoundCanvas: HTMLCanvasElement | null = null;
     /**
      * 是否销毁
      */
@@ -176,6 +177,7 @@ export class EasyPlayerPro {
                 this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-fullscreen').style.display = 'none'
                 this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-fullscreen-exit').style.display = 'flex'
             }
+            this.player.$container.querySelector('.easyplayer-zoom').addEventListener('click', () => this._bindZoomSelectCallback.call(this), {signal: this.signal})
             this.onPlay()
         })
         this.player.on('pause', () => {
@@ -188,7 +190,9 @@ export class EasyPlayerPro {
         })
         this.player.on('videoInfo', (videoInfo: VideoInfoType) => this.onVideoInfo(videoInfo))
         this.player.on('audioInfo', (audioInfo: AudioInfoType) => this.onAudioInfo(audioInfo))
-        this.player.on('fullscreen', (isFullscreen: boolean) => this.onFullscreen(isFullscreen))
+        this.player.on('fullscreen', (isFullscreen: boolean) => {
+            this.onFullscreen(isFullscreen)
+        })
         this.player.on('mute', (isMute: boolean) => this.onMute(isMute))
         this.player.on('kBps', (KBps: number) => this.onKBps(KBps))
         this.player.on('stretch', (isStretch: boolean) => this.onStretch(isStretch))
@@ -272,52 +276,6 @@ export class EasyPlayerPro {
         }
     }
 
-    private bindZoomSelectCallback() {
-        const scaleCanvasLoaders = this.player.player?.ScaleCanvasLoaders;
-        if (!scaleCanvasLoaders) return;
-        let isSelecting = false;
-        scaleCanvasLoaders.$scaleCanvas.addEventListener('mousedown', () => {
-            isSelecting = true;
-        }, { signal: this.signal, capture: true });
-        scaleCanvasLoaders.$scaleCanvas.addEventListener('mousemove', (event: MouseEvent) => {
-            if (!isSelecting) return;
-
-            const scaleObj = scaleCanvasLoaders.scaleObj;
-            const x = Math.min(scaleObj.sx, event.offsetX);
-            const y = Math.min(scaleObj.sy, event.offsetY);
-            const width = Math.abs(event.offsetX - scaleObj.sx);
-            const height = Math.abs(event.offsetY - scaleObj.sy);
-            const ctx = scaleCanvasLoaders.scaleCanvasCtx;
-
-            ctx.clearRect(0, 0, scaleCanvasLoaders.$scaleCanvas.width, scaleCanvasLoaders.$scaleCanvas.height);
-            ctx.strokeStyle = '#00bd7e';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(x, y, width, height);
-        }, { signal: this.signal, capture: true });
-        scaleCanvasLoaders.$scaleCanvas.addEventListener('mouseup', (event: MouseEvent) => {
-            isSelecting = false;
-            const scaleObj = scaleCanvasLoaders.scaleObj;
-            const x = Math.min(scaleObj.sx, event.offsetX);
-            const y = Math.min(scaleObj.sy, event.offsetY);
-            const width = Math.abs(event.offsetX - scaleObj.sx);
-            const height = Math.abs(event.offsetY - scaleObj.sy);
-
-            if (this.onZoomSelect({ x, y, width, height }) === false) {
-                event.stopImmediatePropagation();
-                event.preventDefault();
-                setTimeout(() => {
-                    scaleCanvasLoaders.scaleCanvasCtx.clearRect(
-                        0,
-                        0,
-                        scaleCanvasLoaders.$scaleCanvas.width,
-                        scaleCanvasLoaders.$scaleCanvas.height
-                    );
-                }, 1000);
-                return;
-            }
-        }, { signal: this.signal, capture: true });
-    }
-
     /**
      * 播放
      * @param url 播放地址
@@ -357,7 +315,6 @@ export class EasyPlayerPro {
                     } else {
                         this.player.play(url).then(() => {
                             setTimeout(() => {
-                                this.bindZoomSelectCallback()
                                 resolve()
                             }, 300)
                         }).catch(reject)
@@ -415,6 +372,91 @@ export class EasyPlayerPro {
 
     private _playerContainerMouseLeave() {
         this.player.$container.querySelector('.easyplayer-controls').style.opacity = 0
+    }
+
+    private _bindZoomSelectCallback() {
+        const scaleCanvasLoaders = this.player.player?.ScaleCanvasLoaders;
+        if (!scaleCanvasLoaders) return;
+        const canvas = scaleCanvasLoaders.$scaleCanvas as HTMLCanvasElement;
+        if (this.zoomSelectBoundCanvas === canvas) return;
+        this.zoomSelectBoundCanvas = canvas;
+        const getCanvasPoint = (event: MouseEvent) => {
+            const rect = canvas.getBoundingClientRect();
+            return {
+                x: event.clientX - rect.left,
+                y: event.clientY - rect.top,
+                scaleX: canvas.width / rect.width,
+                scaleY: canvas.height / rect.height,
+            };
+        }
+        let isSelecting = false;
+        const isZoomSelecting = () => this.player.player?.zooming;
+        canvas.addEventListener('wheel', (event: WheelEvent) => {
+            if (!isZoomSelecting()) return;
+            event.stopImmediatePropagation();
+            event.preventDefault();
+        }, { signal: this.signal, capture: true });
+        canvas.addEventListener('mousedown', (event: MouseEvent) => {
+            event.stopImmediatePropagation();
+            event.preventDefault();
+            if (!isZoomSelecting()) return;
+            const point = getCanvasPoint(event);
+            scaleCanvasLoaders.scaleObj.sx = point.x;
+            scaleCanvasLoaders.scaleObj.sy = point.y;
+            isSelecting = true;
+        }, { signal: this.signal, capture: true });
+        canvas.addEventListener('mousemove', (event: MouseEvent) => {
+            if (!isZoomSelecting() || !isSelecting || (event.buttons & 1) !== 1) {
+                isSelecting = false;
+                return;
+            }
+            event.stopImmediatePropagation();
+            event.preventDefault();
+            const scaleObj = scaleCanvasLoaders.scaleObj;
+            const point = getCanvasPoint(event);
+            const x = Math.min(scaleObj.sx, point.x);
+            const y = Math.min(scaleObj.sy, point.y);
+            const width = Math.abs(point.x - scaleObj.sx);
+            const height = Math.abs(point.y - scaleObj.sy);
+            const ctx = scaleCanvasLoaders.scaleCanvasCtx;
+
+            ctx.clearRect(0, 0, scaleCanvasLoaders.$scaleCanvas.width, scaleCanvasLoaders.$scaleCanvas.height);
+            ctx.save();
+            ctx.scale(point.scaleX, point.scaleY);
+            ctx.strokeStyle = '#00bd7e';
+            ctx.lineWidth = 2 / Math.max(point.scaleX, point.scaleY);
+            ctx.strokeRect(x, y, width, height);
+            ctx.restore();
+        }, { signal: this.signal, capture: true });
+        canvas.addEventListener('mouseup', (event: MouseEvent) => {
+            event.stopImmediatePropagation();
+            event.preventDefault();
+            if (!isZoomSelecting() || !isSelecting) return;
+            isSelecting = false;
+            const scaleObj = scaleCanvasLoaders.scaleObj;
+            const point = getCanvasPoint(event);
+            const x = Math.min(scaleObj.sx, point.x);
+            const y = Math.min(scaleObj.sy, point.y);
+            const width = Math.abs(point.x - scaleObj.sx);
+            const height = Math.abs(point.y - scaleObj.sy);
+            this.onZoomSelect({
+                x: x * point.scaleX,
+                y: y * point.scaleY,
+                width: width * point.scaleX,
+                height: height * point.scaleY,
+            })
+            event.stopImmediatePropagation();
+            event.preventDefault();
+            setTimeout(() => {
+                scaleCanvasLoaders.scaleCanvasCtx.clearRect(
+                    0,
+                    0,
+                    canvas.width,
+                    canvas.height
+                );
+            }, 100);
+            return false;
+        }, { signal: this.signal, capture: true });
     }
 
     private bindWebRTCDomEvent() {
