@@ -16,6 +16,13 @@ export type AudioInfoType = {
     depth: string,
 }
 
+export type ZoomSelectInfo = {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+}
+
 export class EasyPlayerPro {
     private player: any = null;
     private config: EasyPlayerProConfig = {};
@@ -94,6 +101,8 @@ export class EasyPlayerPro {
      */
     public onContextmenuClose = () => {
     }
+    public onZoomSelect = (_info: ZoomSelectInfo): boolean | void => {
+    }
     /**
      * 视频编码回调
      */
@@ -160,10 +169,17 @@ export class EasyPlayerPro {
         this.signal = this.controller.signal;
         this.player.on('play', () => {
             this.player.$container.querySelector('.easyplayer-controls-code-wrap').style.display = 'none'
+            if(!this.config.hasControl){
+                this.player.$container.querySelector('.easyplayer-controls').style.display = 'none'
+            }
             this.onPlay()
         })
         this.player.on('pause', () => {
             this.player.$container.querySelector('.easyplayer-controls-code-wrap').style.display = 'none'
+            if(this.player.isFullscreen()) {
+                this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-fullscreen').style.display = 'none'
+                this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-fullscreen-exit').style.display = 'flex'
+            }
             this.onPause()
         })
         this.player.on('videoInfo', (videoInfo: VideoInfoType) => this.onVideoInfo(videoInfo))
@@ -252,6 +268,52 @@ export class EasyPlayerPro {
         }
     }
 
+    private bindZoomSelectCallback() {
+        const scaleCanvasLoaders = this.player.player?.ScaleCanvasLoaders;
+        if (!scaleCanvasLoaders) return;
+        let isSelecting = false;
+        scaleCanvasLoaders.$scaleCanvas.addEventListener('mousedown', () => {
+            isSelecting = true;
+        }, { signal: this.signal, capture: true });
+        scaleCanvasLoaders.$scaleCanvas.addEventListener('mousemove', (event: MouseEvent) => {
+            if (!isSelecting) return;
+
+            const scaleObj = scaleCanvasLoaders.scaleObj;
+            const x = Math.min(scaleObj.sx, event.offsetX);
+            const y = Math.min(scaleObj.sy, event.offsetY);
+            const width = Math.abs(event.offsetX - scaleObj.sx);
+            const height = Math.abs(event.offsetY - scaleObj.sy);
+            const ctx = scaleCanvasLoaders.scaleCanvasCtx;
+
+            ctx.clearRect(0, 0, scaleCanvasLoaders.$scaleCanvas.width, scaleCanvasLoaders.$scaleCanvas.height);
+            ctx.strokeStyle = '#00bd7e';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(x, y, width, height);
+        }, { signal: this.signal, capture: true });
+        scaleCanvasLoaders.$scaleCanvas.addEventListener('mouseup', (event: MouseEvent) => {
+            isSelecting = false;
+            const scaleObj = scaleCanvasLoaders.scaleObj;
+            const x = Math.min(scaleObj.sx, event.offsetX);
+            const y = Math.min(scaleObj.sy, event.offsetY);
+            const width = Math.abs(event.offsetX - scaleObj.sx);
+            const height = Math.abs(event.offsetY - scaleObj.sy);
+
+            if (this.onZoomSelect({ x, y, width, height }) === false) {
+                event.stopImmediatePropagation();
+                event.preventDefault();
+                setTimeout(() => {
+                    scaleCanvasLoaders.scaleCanvasCtx.clearRect(
+                        0,
+                        0,
+                        scaleCanvasLoaders.$scaleCanvas.width,
+                        scaleCanvasLoaders.$scaleCanvas.height
+                    );
+                }, 1000);
+                return;
+            }
+        }, { signal: this.signal, capture: true });
+    }
+
     /**
      * 播放
      * @param url 播放地址
@@ -291,6 +353,7 @@ export class EasyPlayerPro {
                     } else {
                         this.player.play(url).then(() => {
                             setTimeout(() => {
+                                this.bindZoomSelectCallback()
                                 resolve()
                             }, 300)
                         }).catch(reject)

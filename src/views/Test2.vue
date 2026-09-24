@@ -11,6 +11,8 @@ const easyPlayer = useTemplateRef<{playerList:EasyPlayerProType[]}>('easyPlayer'
 const split = ref(1)
 const reset = ref(true)
 const playerConfigs = reactive([{
+  isBand:true,
+  hasControl:false,
   btns:{ quality: true },
   quality:['低清','高清']
 }])
@@ -18,7 +20,9 @@ const playerConfigs = reactive([{
 watch(split, (newVal) => {
   playerConfigs.splice(0, playerConfigs.length,...Array.from({ length: newVal },(_,i)=>{
     return {
-      btns:{ quality: true },
+      isBand:true,
+      hasControl:false,
+      btns:{ quality: true,audio:false },
       quality:['低清','高清']
     }
   }))

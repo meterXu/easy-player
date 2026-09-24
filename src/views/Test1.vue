@@ -2,6 +2,7 @@
 import {ref, onMounted,onUnmounted} from 'vue'
 //@ts-ignore
 import EasyPlayerPro,{type VideoInfo,type AudioInfo} from "@/packages/easy-player-pro/src/index.ts";
+import type {ZoomSelectInfo} from "@/packages/easy-player-pro/src/core/easy-player-pro.ts";
 
 const playerRef = ref()
 const isMute = ref(true)
@@ -80,6 +81,10 @@ onMounted(() => {
   }
   easyPlayer.onDblclickPosition=(position:any)=>{
     console.log(`dblclickPosition event,${JSON.stringify(position)}`)
+  }
+  easyPlayer.onZoomSelect=(info:ZoomSelectInfo)=>{
+    console.log(info)
+    return false
   }
 })
 

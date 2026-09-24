@@ -123,6 +123,10 @@ export const defaultConfig = {
      */
     supportDblclickFullscreen:false,
     /**
+     * 是否显示控件栏
+     */
+    hasControl:true,
+    /**
      * 按钮列表
      */
     btns:{
