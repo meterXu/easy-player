@@ -35,7 +35,7 @@ onMounted(() => {
     console.log(`mute event,${isMute}`)
   }
   easyPlayer.onKBps=(KBps:number)=>{
-    console.log(`kBps event,${KBps}`)
+    // console.log(`kBps event,${KBps}`)
   }
   easyPlayer.onStretch=(isStretch:boolean)=>{
     console.log(`stretch event,${isStretch}`)

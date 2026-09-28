@@ -383,7 +383,6 @@ export class EasyPlayerPro {
         const canvas = scaleCanvasLoaders.$scaleCanvas as HTMLCanvasElement;
         if (this.zoomSelectBoundCanvas === canvas) return;
         this.zoomSelectBoundCanvas = canvas;
-        let isOnVideo = false;
         const getCanvasPoint = (event: MouseEvent) => {
             const rect = canvas.getBoundingClientRect();
             return {
@@ -394,9 +393,23 @@ export class EasyPlayerPro {
             };
         }
         let isSelecting = false;
+        let ignoreNextClick = false;
+        const minSelectDistance = 3;
         const isZoomSelecting = () => this.player.player?.zooming;
         canvas.addEventListener('wheel', (event: WheelEvent) => {
             if (!isZoomSelecting()) return;
+            event.stopImmediatePropagation();
+            event.preventDefault();
+        }, { signal: this.signal, capture: true });
+        canvas.addEventListener('click', (event: MouseEvent) => {
+            if (!ignoreNextClick) return;
+            ignoreNextClick = false;
+            event.stopImmediatePropagation();
+            event.preventDefault();
+        }, { signal: this.signal, capture: true });
+        canvas.addEventListener('dblclick', (event: MouseEvent) => {
+            if (!ignoreNextClick) return;
+            ignoreNextClick = false;
             event.stopImmediatePropagation();
             event.preventDefault();
         }, { signal: this.signal, capture: true });
@@ -443,8 +456,17 @@ export class EasyPlayerPro {
             const y = Math.min(scaleObj.sy, point.y);
             const width = Math.abs(point.x - scaleObj.sx);
             const height = Math.abs(point.y - scaleObj.sy);
+            if (width < minSelectDistance && height < minSelectDistance) {
+                scaleCanvasLoaders.scaleCanvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+                return;
+            }
             const videoWidth = this.player.player.video.videoInfo.width;
             const videoHeight = this.player.player.video.videoInfo.height;
+            let videoX = x;
+            let videoY = y;
+            let videoSelectWidth = width;
+            let videoSelectHeight = height;
+            let isOnVideo = false;
             if (videoWidth && videoHeight) {
                 const rect = canvas.getBoundingClientRect();
                 if (this.player.player._opt.isResize) {
@@ -469,22 +491,30 @@ export class EasyPlayerPro {
 
                     isOnVideo = x >= offsetLeft && x + width <= offsetLeft + displayWidth &&
                         y >= offsetTop && y + height <= offsetTop + displayHeight;
+                    videoX = ((x - offsetLeft) / displayWidth) * videoWidth;
+                    videoY = ((y - offsetTop) / displayHeight) * videoHeight;
+                    videoSelectWidth = (width / displayWidth) * videoWidth;
+                    videoSelectHeight = (height / displayHeight) * videoHeight;
                 } else {
                     isOnVideo = x >= 0 && x + width <= rect.width && y >= 0 && y + height <= rect.height;
+                    videoX = (x / rect.width) * videoWidth;
+                    videoY = (y / rect.height) * videoHeight;
+                    videoSelectWidth = (width / rect.width) * videoWidth;
+                    videoSelectHeight = (height / rect.height) * videoHeight;
                 }
             }
             this.onZoomSelect({
-                x: x * point.scaleX,
-                y: y * point.scaleY,
-                width: width * point.scaleX,
-                height: height * point.scaleY,
+                x: videoX,
+                y: videoY,
+                width: videoSelectWidth,
+                height: videoSelectHeight,
                 videoWidth,
                 videoHeight,
                 isOnVideo
             })
-            event.stopImmediatePropagation();
-            event.preventDefault();
+            ignoreNextClick = true;
             setTimeout(() => {
+                ignoreNextClick = false;
                 scaleCanvasLoaders.scaleCanvasCtx.clearRect(
                     0,
                     0,
