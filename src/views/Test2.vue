@@ -12,7 +12,7 @@ const split = ref(1)
 const reset = ref(true)
 const playerConfigs = reactive([{
   isBand:true,
-  hasControl:false,
+  hasControl:true,
   btns:{ quality: true },
   quality:['低清','高清']
 }])
@@ -21,7 +21,7 @@ watch(split, (newVal) => {
   playerConfigs.splice(0, playerConfigs.length,...Array.from({ length: newVal },(_,i)=>{
     return {
       isBand:true,
-      hasControl:false,
+      hasControl:true,
       btns:{ quality: true,audio:false },
       quality:['低清','高清']
     }

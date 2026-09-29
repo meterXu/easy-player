@@ -213,69 +213,7 @@ export class EasyPlayerPro {
         this.player.on('timestamps', () => this.onTimestamps())
         this.player.on('error', (err: any) => this.onError(err))
         if(!this.config.supportDblclickFullscreen){
-            this.player.$container.addEventListener('dblclick', (event: MouseEvent) => {
-                event.stopPropagation();
-                event.preventDefault();
-                const target = event.target as HTMLElement;
-                if (target && (target.tagName === 'CANVAS' || target.tagName === 'VIDEO')) {
-                    const rect = target.getBoundingClientRect();
-                    const x = event.clientX - rect.left;
-                    const y = event.clientY - rect.top;
-                    const videoWidth = this.player.player.video.videoInfo.width;
-                    const videoHeight = this.player.player.video.videoInfo.height;
-
-                    let videoX: number | null = null;
-                    let videoY: number | null = null;
-                    let isOnVideo = false;
-
-                    if (videoWidth && videoHeight) {
-                        if (this.player.player._opt.isResize) {
-                            // 标准模式：视频保持宽高比居中，需要计算实际画面区域
-                            const videoAspect = videoWidth / videoHeight;
-                            const containerAspect = rect.width / rect.height;
-                            let displayWidth: number;
-                            let displayHeight: number;
-                            let offsetLeft: number;
-                            let offsetTop: number;
-
-                            if (containerAspect > videoAspect) {
-                                // 容器更宽 → 视频高度填满，水平居中（上下黑边）
-                                displayHeight = rect.height;
-                                displayWidth = rect.height * videoAspect;
-                                offsetLeft = (rect.width - displayWidth) / 2;
-                                offsetTop = 0;
-                            } else {
-                                // 容器更高 → 视频宽度填满，垂直居中（左右黑边）
-                                displayWidth = rect.width;
-                                displayHeight = rect.width / videoAspect;
-                                offsetLeft = 0;
-                                offsetTop = (rect.height - displayHeight) / 2;
-                            }
-
-                            // 判断双击点是否落在实际视频画面上
-                            if (x >= offsetLeft && x <= offsetLeft + displayWidth &&
-                                y >= offsetTop && y <= offsetTop + displayHeight) {
-                                videoX = ((x - offsetLeft) / displayWidth) * videoWidth;
-                                videoY = ((y - offsetTop) / displayHeight) * videoHeight;
-                                isOnVideo = true;
-                            }
-                        } else {
-                            // 拉伸模式：视频填满整个容器，按比例映射
-                            videoX = (x / rect.width) * videoWidth;
-                            videoY = (y / rect.height) * videoHeight;
-                            isOnVideo = true;
-                        }
-                    }
-
-                    this.onDblclickPosition({
-                        x:videoX,
-                        y:videoY,
-                        width: videoWidth,
-                        height: videoHeight,
-                        isOnVideo,
-                    });
-                }
-            }, {signal: this.signal, capture: true})
+            this.player.$container.addEventListener('dblclick', (event: MouseEvent) => this._dbClick.call(this,event), {signal: this.signal, capture: true})
         }
     }
 
@@ -369,6 +307,70 @@ export class EasyPlayerPro {
         }
     }
 
+    private _dbClick(event: MouseEvent){
+        event.stopPropagation();
+        event.preventDefault();
+        const target = event.target as HTMLElement;
+        if (target && (target.tagName === 'CANVAS' || target.tagName === 'VIDEO')) {
+            const rect = target.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            const videoWidth = this.player.player.video.videoInfo.width;
+            const videoHeight = this.player.player.video.videoInfo.height;
+
+            let videoX: number | null = null;
+            let videoY: number | null = null;
+            let isOnVideo = false;
+
+            if (videoWidth && videoHeight) {
+                if (this.player.player._opt.isResize) {
+                    // 标准模式：视频保持宽高比居中，需要计算实际画面区域
+                    const videoAspect = videoWidth / videoHeight;
+                    const containerAspect = rect.width / rect.height;
+                    let displayWidth: number;
+                    let displayHeight: number;
+                    let offsetLeft: number;
+                    let offsetTop: number;
+
+                    if (containerAspect > videoAspect) {
+                        // 容器更宽 → 视频高度填满，水平居中（上下黑边）
+                        displayHeight = rect.height;
+                        displayWidth = rect.height * videoAspect;
+                        offsetLeft = (rect.width - displayWidth) / 2;
+                        offsetTop = 0;
+                    } else {
+                        // 容器更高 → 视频宽度填满，垂直居中（左右黑边）
+                        displayWidth = rect.width;
+                        displayHeight = rect.width / videoAspect;
+                        offsetLeft = 0;
+                        offsetTop = (rect.height - displayHeight) / 2;
+                    }
+
+                    // 判断双击点是否落在实际视频画面上
+                    if (x >= offsetLeft && x <= offsetLeft + displayWidth &&
+                        y >= offsetTop && y <= offsetTop + displayHeight) {
+                        videoX = ((x - offsetLeft) / displayWidth) * videoWidth;
+                        videoY = ((y - offsetTop) / displayHeight) * videoHeight;
+                        isOnVideo = true;
+                    }
+                } else {
+                    // 拉伸模式：视频填满整个容器，按比例映射
+                    videoX = (x / rect.width) * videoWidth;
+                    videoY = (y / rect.height) * videoHeight;
+                    isOnVideo = true;
+                }
+            }
+
+            this.onDblclickPosition({
+                x:videoX,
+                y:videoY,
+                width: videoWidth,
+                height: videoHeight,
+                isOnVideo,
+            });
+        }
+    }
+
     private _playerContainerMouseEnter() {
         this.player.$container.querySelector('.easyplayer-controls').style.opacity = 1
     }
@@ -383,13 +385,23 @@ export class EasyPlayerPro {
         const canvas = scaleCanvasLoaders.$scaleCanvas as HTMLCanvasElement;
         if (this.zoomSelectBoundCanvas === canvas) return;
         this.zoomSelectBoundCanvas = canvas;
-        const getCanvasPoint = (event: MouseEvent) => {
+        const syncCanvasSize = () => {
             const rect = canvas.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            const width = Math.round(rect.width * dpr);
+            const height = Math.round(rect.height * dpr);
+            if (canvas.width !== width || canvas.height !== height) {
+                canvas.width = width;
+                canvas.height = height;
+            }
+            return {rect, dpr};
+        }
+        const getCanvasPoint = (event: MouseEvent) => {
+            const {rect} = syncCanvasSize();
             return {
                 x: event.clientX - rect.left,
                 y: event.clientY - rect.top,
-                scaleX: canvas.width / rect.width,
-                scaleY: canvas.height / rect.height,
+                rect,
             };
         }
         let isSelecting = false;
@@ -436,12 +448,13 @@ export class EasyPlayerPro {
             const width = Math.abs(point.x - scaleObj.sx);
             const height = Math.abs(point.y - scaleObj.sy);
             const ctx = scaleCanvasLoaders.scaleCanvasCtx;
+            const {dpr} = syncCanvasSize();
 
-            ctx.clearRect(0, 0, scaleCanvasLoaders.$scaleCanvas.width, scaleCanvasLoaders.$scaleCanvas.height);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.save();
-            ctx.scale(point.scaleX, point.scaleY);
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
             ctx.strokeStyle = '#00bd7e';
-            ctx.lineWidth = 2 / Math.max(point.scaleX, point.scaleY);
+            ctx.lineWidth = 2;
             ctx.strokeRect(x, y, width, height);
             ctx.restore();
         }, { signal: this.signal, capture: true });
