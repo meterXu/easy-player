@@ -36,6 +36,25 @@ export default defineConfig({
 })
 ```
 
+**播放媒体**
+```javascript
+// m3u8
+easyPalyer.play("http://xxxx.m3u8")
+// hls
+easyPalyer.play("http://xxxx.hls")
+// flv
+easyPalyer.play("http://xxxx.flv")
+// webrtc
+easyPalyer.play("webrtc://xxxxx/live/app&type=play")
+// ws
+easyPalyer.play("ws://xxxxx/live/app")
+// http-on-webrtc
+easyPalyer.play("http://xxxxx/rtc/v1/whep?app=xxx")
+// 声网
+easyPalyer.play("agora://appid/channel?token=xxxx")
+```
+
+
 ## 配置属性 config
 
 

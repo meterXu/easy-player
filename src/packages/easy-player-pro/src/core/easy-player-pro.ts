@@ -40,7 +40,7 @@ export class EasyPlayerPro {
     private controller: AbortController
     private signal: AbortSignal
     private zoomSelectBoundCanvas: HTMLCanvasElement | null = null;
-    private agoraClient = null as IAgoraRTCClient|null
+    private agoraClient:IAgoraRTCClient|null = null
     /**
      * 是否销毁
      */
@@ -232,10 +232,6 @@ export class EasyPlayerPro {
         if(!this.config.supportDblclickFullscreen){
             this.player.$container.addEventListener('dblclick', (event: MouseEvent) => this._dbClick.call(this,event), {signal: this.signal, capture: true})
         }
-        if(this.config.isAgora){
-          this._initAgora()
-          this.agoraPlay(this.config.agoraConfig?.appid, this.config.agoraConfig?.channel, this.config.agoraConfig?.token)
-        }
     }
 
     /**
@@ -244,7 +240,7 @@ export class EasyPlayerPro {
      */
     play(url: string): Promise<void> {
         this._url = url
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             try {
                 if (this.player) {
                     if (this._isRtcSRS()) {
@@ -274,7 +270,15 @@ export class EasyPlayerPro {
                                 reject(err);
                             })
                         }
-                    } else {
+                    } else if(this._isAgora()){
+                        await this._initAgora()
+                        const agoraConfig = this._getAgoraConfig(url)
+                        this._agoraPlay(agoraConfig.appid, agoraConfig.channel, agoraConfig.token).then(()=>{
+                            resolve()
+                        }).catch((err: any) => {
+                            reject(err)
+                        })
+                    }else {
                         this.player.play(url).then(() => {
                             setTimeout(() => {
                                 resolve()
@@ -290,43 +294,26 @@ export class EasyPlayerPro {
         })
     }
 
-    agoraPlay(appid?:string,channel?:string,token?:string){
-        if(appid&&channel&&token){
-            if (this.agoraClient.connectionState === 'DISCONNECTED'&&appid&&channel&&token) {
-                return this.agoraClient.join(appid, channel, token)
-            }else{
-                return Promise.reject(new Error('agoraClient state is disconnected'))
-            }
-        }else{
-            return Promise.reject(new Error('appid,channel,token must be provided'))
-        }
-
-    }
-
-    private _initAgora(){
-        if(!this.agoraClient){
-            this.agoraClient = AgoraRTC.createClient({ mode: 'live', codec: 'vp8' })
-            this.agoraClient.setClientRole('audience', { level: 2 })
-            // Subscribe when a remote user publishes a stream
-            this.agoraClient.on('user-joined', async (user: IAgoraRTCRemoteUser) => {
-                console.log('user[' + user.uid + '] join')
-            })
-            this.agoraClient.on('user-published', async (user: IAgoraRTCRemoteUser, mediaType: 'audio' | 'video') => {
-                await this.agoraClient.subscribe(user, mediaType)
-                if (mediaType === 'video') {
-                    console.log('subscribe success')
-                    const remoteVideoTrack = user.videoTrack!
-                    remoteVideoTrack.play(this.videoElement)
+    _agoraPlay(appid:string,channel:string,token:string){
+        return new Promise(async (resolve, reject) => {
+            if(appid&&channel&&token){
+                if (this.agoraClient?.connectionState === 'DISCONNECTED') {
+                    try{
+                        this.agoraClient.join(appid, channel, token).then((res:any)=>{
+                            resolve(res)
+                        }).catch((err:any)=>{
+                            reject(err)
+                        })
+                    }catch (err){
+                        reject(err)
+                    }
+                }else{
+                    reject(new Error('agoraClient state is disconnected'))
                 }
-            })
-            this.agoraClient.on('user-unpublished', async (user: any) => {
-                console.log('unpublish live:', user)
-            })
-            this.agoraClient.on('exception', async (e: any) => {
-                console.error(e)
-            })
-        }
-
+            }else{
+                reject(new Error('appid,channel,token must be provided'))
+            }
+        })
     }
 
     private _play() {
@@ -626,6 +613,66 @@ export class EasyPlayerPro {
         this.videoSharpener.setSharpness(sharpness);
     }
 
+    private async _initAgora(){
+        if(!this.agoraClient){
+            this.agoraClient = AgoraRTC.createClient({ mode: 'live', codec: 'vp8' })
+            await this.agoraClient.setClientRole('audience', { level: 2 })
+            // Subscribe when a remote user publishes a stream
+            this.agoraClient.on('user-joined', async (user: IAgoraRTCRemoteUser) => {
+                console.log('user[' + user.uid + '] join')
+            })
+            this.agoraClient.on('user-published', async (user: IAgoraRTCRemoteUser, mediaType: 'audio' | 'video') => {
+                //@ts-ignore
+                this._user = user;
+                //@ts-ignore
+                this._mediaType = mediaType;
+                await this.agoraClient?.subscribe(user, mediaType)
+                if (mediaType === 'video') {
+                    console.log('subscribe success')
+                    const remoteVideoTrack = user.videoTrack!
+                    remoteVideoTrack.play(this.videoElement)
+                }
+            })
+            this.agoraClient.on('user-unpublished', async (user: any) => {
+                //@ts-ignore
+                this._user = null;
+                //@ts-ignore
+                this._mediaType = null;
+                console.log('unpublish live:', user)
+            })
+            this.agoraClient.on('exception', async (e: any) => {
+                console.error(e)
+            })
+        }else{
+            //@ts-ignore
+            if(this._user){
+                //@ts-ignore
+                await this.agoraClient.unsubscribe(this._user,this._mediaType)
+            }
+            await this.agoraClient.leave()
+        }
+
+    }
+
+    private _getAgoraConfig(url:string){
+        if(url){
+            const appid = url.match(/(?<=agora:\/\/)\w+(?=\/)/gi)
+            const channel = url.match(/(?<=\/)\w+(?=\?)/gi)
+            const token =url.match(/(?<=\?token=)\w+$/gi)
+            return {
+                appid:appid?appid[0]:'',
+                channel:channel?channel[0]:'',
+                token:token?token[0]:''
+            }
+        }else{
+            return {
+                appid:'',
+                channel:'',
+                token:''
+            }
+        }
+    }
+
     private bindWebRTCDomEvent() {
         this.player.$container.addEventListener('mouseenter', () => this._playerContainerMouseEnter.call(this), {signal: this.signal})
         this.player.$container.addEventListener('mouseleave', () => this._playerContainerMouseLeave.call(this), {signal: this.signal})
@@ -643,11 +690,38 @@ export class EasyPlayerPro {
     }
 
     /**
+     * 判断是否为SRS直播源
+     */
+    private _isRtcSRS() {
+        return this.config.isRtcSRS || (this._url.indexOf('/rtc/v1/whep') > -1)
+    }
+
+    /**
+     * 判断是否为声网地址
+     * @private
+     */
+    private _isAgora(){
+        return this.config.isAgora || (this._url.indexOf('agora://') > -1)
+    }
+
+    private _destroyVideoSharpener() {
+        this.videoSharpener?.destroy();
+        this.videoSharpener = null;
+        this.sharpenerCanvas?.remove();
+        this.sharpenerCanvas = null;
+        this.videoElement.style.opacity = '';
+    }
+
+    /**
      * 暂停播放
      */
     pause() {
         if (this.player) {
             if (this._isRtcSRS()) {
+                this.videoElement.pause()
+                this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-play').style.display = 'flex'
+                this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-pause').style.display = 'none'
+            } else if (this._isAgora()) {
                 this.videoElement.pause()
                 this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-play').style.display = 'flex'
                 this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-pause').style.display = 'none'
@@ -663,6 +737,8 @@ export class EasyPlayerPro {
     isPause(): boolean | null {
         if (this.player) {
             if (this._isRtcSRS()) {
+                return this.videoElement.paused
+            } else if (this._isAgora()) {
                 return this.videoElement.paused
             } else {
                 return this.player.isPause()
@@ -682,6 +758,10 @@ export class EasyPlayerPro {
                 this.videoElement.muted = isMute
                 this.player.$container.querySelector('.easyplayer-icon-audio').style.display = isMute ? 'none' : 'flex'
                 this.player.$container.querySelector('.easyplayer-icon-mute').style.display = isMute ? 'flex' : 'none'
+            } else if (this._isAgora()) {
+                this.videoElement.muted = isMute
+                this.player.$container.querySelector('.easyplayer-icon-audio').style.display = isMute ? 'none' : 'flex'
+                this.player.$container.querySelector('.easyplayer-icon-mute').style.display = isMute ? 'flex' : 'none'
             } else {
                 this.player.setMute(isMute)
             }
@@ -695,7 +775,9 @@ export class EasyPlayerPro {
         if (this.player) {
             if (this._isRtcSRS()) {
                 return this.videoElement.muted
-            } else {
+            } else if (this._isAgora()) {
+                return this.videoElement.muted
+            }  else {
                 return this.player.isMute()
             }
         } else {
@@ -836,21 +918,6 @@ export class EasyPlayerPro {
     }
 
     /**
-     * 判断是否为SRS直播源
-     */
-    private _isRtcSRS() {
-        return this.config.isRtcSRS || (this._url.indexOf('/rtc/v1/whep') > -1)
-    }
-
-    private _destroyVideoSharpener() {
-        this.videoSharpener?.destroy();
-        this.videoSharpener = null;
-        this.sharpenerCanvas?.remove();
-        this.sharpenerCanvas = null;
-        this.videoElement.style.opacity = '';
-    }
-
-    /**
      * 关闭视频，释放底层资源
      */
     destroy() {
@@ -859,6 +926,18 @@ export class EasyPlayerPro {
                 this._destroyVideoSharpener()
                 if (this._isRtcSRS()) {
                     this.controller.abort()
+                } else if(this._isAgora()){
+                    //@ts-ignore
+                    if(this._user){
+                        //@ts-ignore
+                        this.agoraClient?.unsubscribe(this._user,this._mediaType)
+                        //@ts-ignore
+                        this._user = null
+                        //@ts-ignore
+                        this._mediaType  = null
+                    }
+                    this.agoraClient?.leave()
+                    this.agoraClient = null
                 }
                 this.player.destroy().catch(()=>{})
             }
@@ -868,6 +947,7 @@ export class EasyPlayerPro {
             this.isDestroy = true
         }catch (error) {}
     }
+
     close(){
         this.destroy()
         //@ts-ignore
@@ -906,7 +986,6 @@ export interface EasyPlayerProType{
     onTimestamps:()=>void,
     onError:(err: any)=>void,
     play:(url: string)=>Promise<void>,
-    agoraPlay:(appid: string,channel: string,token: string)=>Promise<void>,
     pause:()=>void,
     isPause:()=>boolean,
     setMute:(isMute: boolean)=>void,

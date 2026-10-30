@@ -63,7 +63,7 @@ function onSplit(_split:number){
     split.value=_split
     urls.splice(0,urls.length)
     urls.push(...Array.from(new Array(split.value),(_x:any,index:number)=>{
-      return "http://172.16.21.228:8088/live/test.live.flv"
+      return "https://sf1-cdn-tos.huoshanstatic.com/obj/media-fe/xgplayer_doc_video/hls/xgplayer-demo.m3u8"
     }))
     reset.value = true
   })

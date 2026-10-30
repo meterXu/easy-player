@@ -11,9 +11,6 @@ import { RouterView } from 'vue-router'
       <li>
         <router-link to="/test2">test2</router-link>
       </li>
-      <li>
-        <router-link to="/test3">test3</router-link>
-      </li>
     </ul>
   </nav>
   <RouterView />

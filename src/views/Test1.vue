@@ -9,7 +9,7 @@ const isMute = ref(true)
 const isPause = ref(false)
 const isFullscreen = ref(false)
 const isSuperResolution = ref(false)
-const url = ref('http://172.16.21.228:8088/live/test.live.flv')
+const url = ref('https://sf1-cdn-tos.huoshanstatic.com/obj/media-fe/xgplayer_doc_video/hls/xgplayer-demo.m3u8')
 const videoInfo = ref()
 const audioInfo = ref()
 
