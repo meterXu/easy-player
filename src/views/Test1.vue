@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ref, onMounted,onUnmounted} from 'vue'
+import {ref, onMounted, onUnmounted, reactive} from 'vue'
 //@ts-ignore
 import EasyPlayerPro,{type VideoInfo,type AudioInfo} from "@/packages/easy-player-pro/src/index.ts";
 import type {ZoomSelectInfoType} from "@/packages/easy-player-pro/src/core/easy-player-pro.ts";

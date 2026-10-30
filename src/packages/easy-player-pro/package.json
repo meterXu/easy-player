@@ -33,7 +33,8 @@
     "H.265"
   ],
   "dependencies": {
-    "lodash-es": "^4.17.21"
+    "lodash-es": "^4.17.21",
+    "agora-rtc-sdk-ng": "^4.12.1"
   },
   "devDependencies": {
     "@types/lodash-es": "^4.17.12",

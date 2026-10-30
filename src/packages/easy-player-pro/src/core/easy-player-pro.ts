@@ -1,6 +1,8 @@
 import {type EasyPlayerProConfig, defaultConfig} from "./config";
 import {mergeWith} from 'lodash-es'
-import {VideoSharpener} from './VideoSharpener'
+// @ts-ignore
+import AgoraRTC, { IAgoraRTCClient, IAgoraRTCRemoteUser } from "agora-rtc-sdk-ng"
+import {VideoSharpener} from './video-sharpener'
 
 export type VideoInfoType = {
     encType: string
@@ -38,6 +40,7 @@ export class EasyPlayerPro {
     private controller: AbortController
     private signal: AbortSignal
     private zoomSelectBoundCanvas: HTMLCanvasElement | null = null;
+    private agoraClient = null as IAgoraRTCClient|null
     /**
      * 是否销毁
      */
@@ -229,6 +232,10 @@ export class EasyPlayerPro {
         if(!this.config.supportDblclickFullscreen){
             this.player.$container.addEventListener('dblclick', (event: MouseEvent) => this._dbClick.call(this,event), {signal: this.signal, capture: true})
         }
+        if(this.config.isAgora){
+          this._initAgora()
+          this.agoraPlay(this.config.agoraConfig?.appid, this.config.agoraConfig?.channel, this.config.agoraConfig?.token)
+        }
     }
 
     /**
@@ -281,6 +288,45 @@ export class EasyPlayerPro {
                 reject(err)
             }
         })
+    }
+
+    agoraPlay(appid?:string,channel?:string,token?:string){
+        if(appid&&channel&&token){
+            if (this.agoraClient.connectionState === 'DISCONNECTED'&&appid&&channel&&token) {
+                return this.agoraClient.join(appid, channel, token)
+            }else{
+                return Promise.reject(new Error('agoraClient state is disconnected'))
+            }
+        }else{
+            return Promise.reject(new Error('appid,channel,token must be provided'))
+        }
+
+    }
+
+    private _initAgora(){
+        if(!this.agoraClient){
+            this.agoraClient = AgoraRTC.createClient({ mode: 'live', codec: 'vp8' })
+            this.agoraClient.setClientRole('audience', { level: 2 })
+            // Subscribe when a remote user publishes a stream
+            this.agoraClient.on('user-joined', async (user: IAgoraRTCRemoteUser) => {
+                console.log('user[' + user.uid + '] join')
+            })
+            this.agoraClient.on('user-published', async (user: IAgoraRTCRemoteUser, mediaType: 'audio' | 'video') => {
+                await this.agoraClient.subscribe(user, mediaType)
+                if (mediaType === 'video') {
+                    console.log('subscribe success')
+                    const remoteVideoTrack = user.videoTrack!
+                    remoteVideoTrack.play(this.videoElement)
+                }
+            })
+            this.agoraClient.on('user-unpublished', async (user: any) => {
+                console.log('unpublish live:', user)
+            })
+            this.agoraClient.on('exception', async (e: any) => {
+                console.error(e)
+            })
+        }
+
     }
 
     private _play() {
@@ -860,6 +906,7 @@ export interface EasyPlayerProType{
     onTimestamps:()=>void,
     onError:(err: any)=>void,
     play:(url: string)=>Promise<void>,
+    agoraPlay:(appid: string,channel: string,token: string)=>Promise<void>,
     pause:()=>void,
     isPause:()=>boolean,
     setMute:(isMute: boolean)=>void,
@@ -876,5 +923,5 @@ export interface EasyPlayerProType{
     getAudioInfo:()=>AudioInfoType | null,
     setMic:(isMic: boolean)=>void,
     destroy:()=>void,
-    close:()=>void,
+    close:()=>void
 }
