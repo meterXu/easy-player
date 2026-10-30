@@ -1,10 +1,8 @@
 import { fileURLToPath, URL } from 'node:url'
-
-import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import easyPlayerPro from './src/packages/vite-plugin-easy-player-pro/src/index'
-import { loadEnv } from 'vite'
+import { loadEnv,defineConfig } from 'vite'
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }: { mode: string }) => {

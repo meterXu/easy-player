@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {nextTick, onMounted, onUnmounted, ref, shallowReactive, watch} from "vue";
-import {EasyPlayerProConfigType, EasyPlayerProType} from "../../easy-player-pro/src/index";
+import type {EasyPlayerProConfigType, EasyPlayerProType} from "../../easy-player-pro/src/index";
 import EasyPlayerPro from "../../easy-player-pro/src/index";
 const {urls=[],isLive=true,autoplay=false,hasAudio=true,mute=true,stretch=false,split=1,config={}} = defineProps<{
   urls?: string[],
