@@ -8,7 +8,8 @@ const playerRef = ref()
 const isMute = ref(true)
 const isPause = ref(false)
 const isFullscreen = ref(false)
-const url = ref('https://sf1-cdn-tos.huoshanstatic.com/obj/media-fe/xgplayer_doc_video/hls/xgplayer-demo.m3u8')
+const isSuperResolution = ref(false)
+const url = ref('http://172.16.21.228:8088/live/test.live.flv')
 const videoInfo = ref()
 const audioInfo = ref()
 
@@ -112,6 +113,11 @@ function onMute() {
   isMute.value = easyPlayer.isMute()
 }
 
+function onSuperResolution(){
+  easyPlayer.setSuperResolution(!isSuperResolution.value)
+  isSuperResolution.value = !isSuperResolution.value
+}
+
 function onScreenshot(){
   let res = easyPlayer.screenshot('test','jpg',0.5,'blob')
   res&&downloadFileByBlob('test',res)
@@ -181,6 +187,7 @@ function downloadFileByBlob(name:string, blob:Blob) {
         <button @click="onPlay">播放</button>
         <button @click="onPause">暂停,{{isPause}}</button>
         <button @click="onMute">切换静音,{{isMute}}</button>
+        <button @click="onSuperResolution">画质增强,{{isSuperResolution}}</button>
         <button @click="onScreenshot">获取快照</button>
         <button @click="onSetFullscreen">切换全屏,{{isFullscreen}}</button>
         <button @click="onexitFullscreen">退出全屏,{{isFullscreen}}</button>

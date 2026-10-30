@@ -12,7 +12,7 @@ export const defaultConfig = {
      */
     isMute:false,
     /**
-     * 视频拉伸
+     * 画面等比例
      */
     stretch:false,
     /**
@@ -48,17 +48,13 @@ export const defaultConfig = {
      */
     WASMSIMD:true,
     /**
-     * 硬解码
+     * 超分辨率自适应锐化
      */
-    gpuDecoder:false,
+    superResolution:false,
     /**
-     * 渲染方式
+     * 超分辨率自适应锐化强度 0~1
      */
-    webGPU:false,
-    /**
-     * 渲染容器
-     */
-    canvasRender:false,
+    superResolutionSharpness:0.6,
     /**
      * SRS类型
      */

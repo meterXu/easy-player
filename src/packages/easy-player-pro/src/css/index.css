@@ -2,3 +2,7 @@
     background-image:url("../img/icon-play.svg");
     background-size: 48px;
 }
+.easyplayer-container video,.easyplayer-container canvas {
+    filter: contrast(1.1) saturate(1.1);
+    image-rendering: -webkit-optimize-contrast;
+}
