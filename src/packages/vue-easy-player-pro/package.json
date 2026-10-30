@@ -39,7 +39,10 @@
     "url": "https://github.com/meterXu/easy-player/issues"
   },
   "license": "MIT",
-  "dependencies": {},
+  "dependencies": {
+    "lodash-es": "^4.17.21",
+    "agora-rtc-sdk-ng": "^4.12.1"
+  },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.1",
     "typescript": "~5.8.3",
