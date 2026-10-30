@@ -17,6 +17,7 @@ EasyPlayer.js H5播放器，是一款能够同时支持HTTP、HTTP-FLV、HLS（m
 - [x] 支持 HTTP-FMP4/WS-FMP4 (H265/H265)播放;
 - [x] 支持 WEBRTC(easy支持H264/H265、其他流媒体支持H264)播放;
 - [x] 支持 裸流(H264/H265) 播放;
+- [x] 支持 声网(agora)播放;
 - [x] 支持 直播和点播播放;
 - [x] 支持 点播多清晰度播放;
 - [x] 支持 全屏或比例显示;
