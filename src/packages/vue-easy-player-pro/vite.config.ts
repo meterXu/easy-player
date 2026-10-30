@@ -19,6 +19,21 @@ export default defineConfig({
       name: 'VueEasyPlayerPro',
       formats: ['es'],
     },
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+        pure_funcs: ['console.log'],
+      },
+      mangle: {
+        toplevel: true,
+        properties: false,
+      },
+      format: {
+        comments: false,
+      },
+    },
     rollupOptions: {
       external: ['vue'],
       output: {

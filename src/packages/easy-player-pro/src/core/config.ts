@@ -151,15 +151,7 @@ export const defaultConfig = {
     /**
      * 是否声网
      */
-    isAgora:false,
-    /**
-     * 声网配置
-     */
-    agoraConfig:{
-        appid:'',
-        token:'',
-        channel:'',
-    }
+    isAgora:false
 }
 export type EasyPlayerProConfig = Partial<typeof defaultConfig>
 
