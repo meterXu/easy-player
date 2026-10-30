@@ -3,6 +3,7 @@ export interface VideoSharpenerOptions {
 }
 
 export class VideoSharpener {
+    private readonly video: HTMLVideoElement;
     private readonly canvas: HTMLCanvasElement;
     private sharpness: number;
 
@@ -64,9 +65,11 @@ export class VideoSharpener {
   `;
 
     constructor(
+        videoElement: HTMLVideoElement,
         canvasElement: HTMLCanvasElement,
         options: VideoSharpenerOptions = {}
     ) {
+        this.video = videoElement;
         this.canvas = canvasElement;
         this.sharpness = options.sharpness ?? 0.6;
 
@@ -182,17 +185,26 @@ export class VideoSharpener {
 
     private renderFrame(): void {
         const gl = this.gl;
-        if (!gl) {
+        if (!gl || this.video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) {
             return;
         }
+
+        const { videoWidth, videoHeight } = this.video;
+        if (videoWidth === 0 || videoHeight === 0) return;
+
         // 动态同步 Canvas 分辨率，契合视网膜与全屏拉伸
-        gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
+        if (this.canvas.width !== videoWidth || this.canvas.height !== videoHeight) {
+            this.canvas.width = videoWidth;
+            this.canvas.height = videoHeight;
+            gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
+        }
+
         // 更新视频帧纹理
         gl.bindTexture(gl.TEXTURE_2D, this.texture);
-        // @ts-ignore
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, this.video);
 
         // 更新参数
+        gl.uniform2f(this.uResolution, videoWidth, videoHeight);
         gl.uniform1f(this.uSharpness, this.sharpness);
 
         // 绘制渲染

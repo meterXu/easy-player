@@ -48,6 +48,18 @@ export const defaultConfig = {
      */
     WASMSIMD:true,
     /**
+     * 硬解码
+     */
+    gpuDecoder:true,
+    /**
+     * 渲染方式
+     */
+    webGPU:true,
+    /**
+     * 渲染容器
+     */
+    canvasRender:false,
+    /**
      * 超分辨率自适应锐化
      */
     superResolution:false,

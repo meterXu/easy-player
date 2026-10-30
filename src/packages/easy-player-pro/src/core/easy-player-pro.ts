@@ -32,7 +32,7 @@ export class EasyPlayerPro {
     private config: EasyPlayerProConfig = {};
     private container: HTMLElement;
     private _url = ''
-    private canvasElement: HTMLCanvasElement;
+    private videoElement: HTMLVideoElement;
     private sharpenerCanvas: HTMLCanvasElement | null = null;
     private videoSharpener: VideoSharpener | null = null;
     private controller: AbortController
@@ -162,7 +162,7 @@ export class EasyPlayerPro {
     }
 
     constructor(container: HTMLElement, config?: EasyPlayerProConfig) {
-        this.config = mergeWith({}, defaultConfig, config,{canvasRender:true,gpuDecoder:true,webGPU:false},(objValue, srcValue) => {
+        this.config = mergeWith({}, defaultConfig, config,(objValue, srcValue) => {
             if (Array.isArray(objValue)) {
                 return srcValue;
             }
@@ -170,11 +170,12 @@ export class EasyPlayerPro {
         this.container = container
         //@ts-ignore
         this.player = new window.EasyPlayerPro(this.container, this.config);
-        this.canvasElement = this.player.$container.querySelector('canvas');
+        this.videoElement = this.player.$container.querySelector('video');
         this.isDestroy = false;
         this.controller = new AbortController();
         this.signal = this.controller.signal;
         this.player.on('play', () => {
+            this.videoElement = this.player.$container.querySelector('video');
             this.player.$container.querySelector('.easyplayer-controls-code-wrap').style.display = 'none'
             if(!this.config.hasControl){
                 this.player.$container.querySelector('.easyplayer-controls').style.display = 'none'
@@ -185,7 +186,10 @@ export class EasyPlayerPro {
             }
             this.player.$container.querySelector('.easyplayer-zoom')?.addEventListener('click', () => this._bindZoomSelectCallback.call(this), {signal: this.signal})
             this.onPlay()
-            this._syncVideoSharpener();
+            if(this.config.superResolution) {
+                this._initVideoSharpener(this.config.superResolutionSharpness);
+                this._setVideoSharpenerVisible(true);
+            }
         })
         this.player.on('pause', () => {
             this.videoSharpener?.stopRender();
@@ -203,7 +207,12 @@ export class EasyPlayerPro {
         })
         this.player.on('mute', (isMute: boolean) => this.onMute(isMute))
         this.player.on('kBps', (KBps: number) => this.onKBps(KBps))
-        this.player.on('stretch', (isStretch: boolean) => this.onStretch(isStretch))
+        this.player.on('stretch', (isStretch: boolean) => {
+            if(this.sharpenerCanvas){
+                this.sharpenerCanvas.className = `easyplayer-super-resolution-canvas ${isStretch?'contain':'fill'}`;
+            }
+            this.onStretch(isStretch)
+        })
         this.player.on('ptz', (ptz: any) => this.onPTZ(ptz))
         this.player.on('screenshots', () => this.onScreenshots())
         this.player.on('contextmenuClose', () => this.onContextmenuClose())
@@ -232,32 +241,32 @@ export class EasyPlayerPro {
             try {
                 if (this.player) {
                     if (this._isRtcSRS()) {
-                        // this.player.$container.querySelector('.easyplayer-loading').style.display = 'flex'
-                        // this.player.player._opt.url = url
-                        // if (this.videoElement) {
-                        //     this.videoElement.autoplay = true
-                        //     this.videoElement.controls = false
-                        //     this.videoElement.muted = true
-                        //     this.player.player._opt.isWebrtcForSRS = true
-                        //     this.player.player._opt.isWebrtc = true
-                        //     this.player.player._opt.rtcSdp = true
-                        //     //@ts-ignore
-                        //     const sdk = new SrsRtcWhipWhepAsync();
-                        //     sdk.play(url, {
-                        //         videoOnly: true,
-                        //         audioOnly: false
-                        //     }).then(() => {
-                        //         setTimeout(() => {
-                        //             // this.videoElement.srcObject = sdk.stream;
-                        //             this.player.player.playing = true
-                        //             this.bindWebRTCDomEvent()
-                        //             resolve()
-                        //         }, 1000)
-                        //     }).catch((err: any) => {
-                        //         sdk.close();
-                        //         reject(err);
-                        //     })
-                        // }
+                        this.player.$container.querySelector('.easyplayer-loading').style.display = 'flex'
+                        this.player.player._opt.url = url
+                        if (this.videoElement) {
+                            this.videoElement.autoplay = true
+                            this.videoElement.controls = false
+                            this.videoElement.muted = true
+                            this.player.player._opt.isWebrtcForSRS = true
+                            this.player.player._opt.isWebrtc = true
+                            this.player.player._opt.rtcSdp = true
+                            //@ts-ignore
+                            const sdk = new SrsRtcWhipWhepAsync();
+                            sdk.play(url, {
+                                videoOnly: true,
+                                audioOnly: false
+                            }).then(() => {
+                                setTimeout(() => {
+                                    this.videoElement.srcObject = sdk.stream;
+                                    this.player.player.playing = true
+                                    this.bindWebRTCDomEvent()
+                                    resolve()
+                                }, 1000)
+                            }).catch((err: any) => {
+                                sdk.close();
+                                reject(err);
+                            })
+                        }
                     } else {
                         this.player.play(url).then(() => {
                             setTimeout(() => {
@@ -275,30 +284,30 @@ export class EasyPlayerPro {
     }
 
     private _play() {
-        // this.player.$container.querySelector('.easyplayer-loading').style.display = 'flex'
-        // setTimeout(() => {
-        //     this.videoElement.play()
-        //     this.player.player.playing = true
-        //     this._hideNode()
-        //     this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-play').style.display = 'none'
-        //     this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-pause').style.display = 'flex'
-        //     if(this.player.isFullscreen()) {
-        //         this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-fullscreen').style.display = 'none'
-        //         this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-fullscreen-exit').style.display = 'flex'
-        //     }
-        // }, 500)
+        this.player.$container.querySelector('.easyplayer-loading').style.display = 'flex'
+        setTimeout(() => {
+            this.videoElement.play()
+            this.player.player.playing = true
+            this._hideNode()
+            this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-play').style.display = 'none'
+            this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-pause').style.display = 'flex'
+            if(this.player.isFullscreen()) {
+                this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-fullscreen').style.display = 'none'
+                this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-fullscreen-exit').style.display = 'flex'
+            }
+        }, 500)
     }
 
     private _pause() {
-        // this.videoElement.pause()
-        // this.player.player.playing = false
-        // this._hideNode()
-        // this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-play').style.display = 'flex'
-        // this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-pause').style.display = 'none'
-        // if(this.player.isFullscreen()) {
-        //     this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-fullscreen').style.display = 'none'
-        //     this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-fullscreen-exit').style.display = 'flex'
-        // }
+        this.videoElement.pause()
+        this.player.player.playing = false
+        this._hideNode()
+        this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-play').style.display = 'flex'
+        this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-pause').style.display = 'none'
+        if(this.player.isFullscreen()) {
+            this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-fullscreen').style.display = 'none'
+            this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-fullscreen-exit').style.display = 'flex'
+        }
     }
 
     private _hideNode() {
@@ -544,22 +553,31 @@ export class EasyPlayerPro {
         }, { signal: this.signal, capture: true });
     }
 
-    private _syncVideoSharpener() {
-        if(!this.videoSharpener){
-            setTimeout(()=>{
-                this.canvasElement = this.player.$container.querySelector('canvas');
-                this.videoSharpener = new VideoSharpener(this.canvasElement, {
-                    sharpness: this.config.superResolutionSharpness,
-                });
-            },3000)
-        }else{
-            this.videoSharpener?.setSharpness(this.config.superResolutionSharpness||0.6);
+    private _setVideoSharpenerVisible(isVisible: boolean) {
+        if (!this.sharpenerCanvas) return;
+        this.sharpenerCanvas.style.display = isVisible ? 'block' : 'none';
+        this.videoElement.style.opacity = isVisible ? '0' : '';
+        if(isVisible) {
+            this.videoSharpener?.startRender();
+        }else {
+            this.videoSharpener?.stopRender();
         }
-        if (this.config.superResolution) {
-            this.videoSharpener!.startRender();
-        }else{
-            // this.videoSharpener!.stopRender();
-        }
+    }
+
+    private _initVideoSharpener(sharpness:number|undefined=0.6) {
+        if (!this.videoElement || !this.player?.$container) return;
+        this.videoSharpener?.destroy();
+        this.videoSharpener=null;
+        this.sharpenerCanvas?.remove();
+        this.sharpenerCanvas = null;
+        const canvas = document.createElement('canvas');
+        canvas.className = `easyplayer-super-resolution-canvas ${this.config.stretch?'contain':'fill'}`;
+        this.videoElement.insertAdjacentElement('afterend', canvas);
+        this.sharpenerCanvas = canvas;
+        this.videoSharpener = new VideoSharpener(this.videoElement, this.sharpenerCanvas, {
+            sharpness: this.config.superResolutionSharpness,
+        });
+        this.videoSharpener.setSharpness(sharpness);
     }
 
     private bindWebRTCDomEvent() {
@@ -584,9 +602,9 @@ export class EasyPlayerPro {
     pause() {
         if (this.player) {
             if (this._isRtcSRS()) {
-                // this.videoElement.pause()
-                // this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-play').style.display = 'flex'
-                // this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-pause').style.display = 'none'
+                this.videoElement.pause()
+                this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-play').style.display = 'flex'
+                this.player.$container.querySelector('.easyplayer-controls-item.easyplayer-pause').style.display = 'none'
             } else {
                 this.player.pause()
             }
@@ -599,8 +617,7 @@ export class EasyPlayerPro {
     isPause(): boolean | null {
         if (this.player) {
             if (this._isRtcSRS()) {
-                // return this.videoElement.paused
-                return null
+                return this.videoElement.paused
             } else {
                 return this.player.isPause()
             }
@@ -616,7 +633,7 @@ export class EasyPlayerPro {
     setMute(isMute: boolean) {
         if (this.player) {
             if (this._isRtcSRS()) {
-                // this.videoElement.muted = isMute
+                this.videoElement.muted = isMute
                 this.player.$container.querySelector('.easyplayer-icon-audio').style.display = isMute ? 'none' : 'flex'
                 this.player.$container.querySelector('.easyplayer-icon-mute').style.display = isMute ? 'flex' : 'none'
             } else {
@@ -631,8 +648,7 @@ export class EasyPlayerPro {
     isMute(): boolean | null {
         if (this.player) {
             if (this._isRtcSRS()) {
-                // return this.videoElement.muted
-                return null
+                return this.videoElement.muted
             } else {
                 return this.player.isMute()
             }
@@ -764,9 +780,13 @@ export class EasyPlayerPro {
      * @param sharpness
      */
     setSuperResolution(isEnable:boolean,sharpness = this.config.superResolutionSharpness ?? 0.6) {
-        this.config.superResolution = isEnable;
-        this.config.superResolutionSharpness = sharpness;
-        this._syncVideoSharpener();
+        if(isEnable){
+            this._initVideoSharpener(sharpness)
+            this._setVideoSharpenerVisible(true)
+        }else{
+            this._setVideoSharpenerVisible(false)
+        }
+
     }
 
     /**
@@ -776,17 +796,21 @@ export class EasyPlayerPro {
         return this.config.isRtcSRS || (this._url.indexOf('/rtc/v1/whep') > -1)
     }
 
+    private _destroyVideoSharpener() {
+        this.videoSharpener?.destroy();
+        this.videoSharpener = null;
+        this.sharpenerCanvas?.remove();
+        this.sharpenerCanvas = null;
+        this.videoElement.style.opacity = '';
+    }
+
     /**
      * 关闭视频，释放底层资源
      */
     destroy() {
         try{
             if (this.player) {
-                this.videoSharpener?.destroy();
-                this.videoSharpener = null;
-                this.sharpenerCanvas?.remove();
-                this.sharpenerCanvas = null;
-                this.canvasElement.style.opacity = '';
+                this._destroyVideoSharpener()
                 if (this._isRtcSRS()) {
                     this.controller.abort()
                 }
